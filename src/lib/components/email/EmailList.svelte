@@ -1,4 +1,5 @@
 <script lang="ts">
+	import EmailCard from './EmailCard.svelte';
 	import type { EmailItem } from '$lib/types/account';
 
 	type Props = {
@@ -20,19 +21,11 @@
 
 	<div class="list">
 		{#each emails as email (email.id)}
-			<button
-				class="email-card"
-				class:selected={selectedEmail === String(email.id)}
-				onclick={() => (selectedEmail = String(email.id))}
-			>
-				<div>
-					<strong>{email.label}</strong>
-					<p>{email.accountCount} akun · Recovery: {email.recovery}</p>
-				</div>
-				<span class:good={email.status === 'safe'} class:warn={email.status === 'audit'}>
-					{email.status === 'safe' ? 'aman' : 'audit'}
-				</span>
-			</button>
+			<EmailCard
+				{email}
+				selected={selectedEmail === String(email.id)}
+				onSelect={() => (selectedEmail = String(email.id))}
+			/>
 		{/each}
 	</div>
 </div>

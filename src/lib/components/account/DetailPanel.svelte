@@ -1,6 +1,8 @@
 <script lang="ts">
+	import StatusBadge from '$lib/components/ui/StatusBadge.svelte';
 	import type { AccountItem, EmailItem } from '$lib/types/account';
 	import { getStatusLabel } from '$lib/utils/account';
+	import InfoRow from './InfoRow.svelte';
 
 	type Props = {
 		account: AccountItem;
@@ -14,9 +16,10 @@
 <aside class="detail-panel">
 	<div class="detail-header">
 		<div class="avatar">{account.name.slice(0, 1)}</div>
-		<span class:good={account.status === 'active'} class:warn={account.status === 'need_check'}>
-			{getStatusLabel(account.status)}
-		</span>
+		<StatusBadge
+			variant={account.status === 'active' ? 'good' : 'warn'}
+			label={getStatusLabel(account.status)}
+		/>
 	</div>
 
 	<div class="detail-title">
@@ -27,34 +30,13 @@
 	<section class="detail-section">
 		<h3>Informasi Akun</h3>
 		<dl>
-			<div>
-				<dt>Platform</dt>
-				<dd>{account.platform}</dd>
-			</div>
-			<div>
-				<dt>Username</dt>
-				<dd>{account.username}</dd>
-			</div>
-			<div>
-				<dt>User ID</dt>
-				<dd>{account.userId ?? '-'}</dd>
-			</div>
-			<div>
-				<dt>Login via</dt>
-				<dd>{account.loginMethod}</dd>
-			</div>
-			<div>
-				<dt>Email</dt>
-				<dd>{email?.label ?? '-'}</dd>
-			</div>
-			<div>
-				<dt>Password</dt>
-				<dd>Lihat {account.passwordLocation}</dd>
-			</div>
-			<div>
-				<dt>2FA</dt>
-				<dd>{account.twoFactor ? 'Aktif' : 'Belum aktif'}</dd>
-			</div>
+			<InfoRow label="Platform" value={account.platform} />
+			<InfoRow label="Username" value={account.username} />
+			<InfoRow label="User ID" value={account.userId ?? '-'} />
+			<InfoRow label="Login via" value={account.loginMethod} />
+			<InfoRow label="Email" value={email?.label ?? '-'} />
+			<InfoRow label="Password" value={`Lihat ${account.passwordLocation}`} />
+			<InfoRow label="2FA" value={account.twoFactor ? 'Aktif' : 'Belum aktif'} />
 		</dl>
 	</section>
 

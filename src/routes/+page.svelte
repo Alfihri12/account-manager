@@ -1,10 +1,6 @@
 <script lang="ts">
-	import Sidebar from '$lib/components/Sidebar.svelte';
-	import StatGrid from '$lib/components/StatGrid.svelte';
-	import Toolbar from '$lib/components/Toolbar.svelte';
-	import AccountList from '$lib/components/AccountList.svelte';
-	import EmailList from '$lib/components/EmailList.svelte';
-	import DetailPanel from '$lib/components/DetailPanel.svelte';
+	import DashboardContent from '$lib/components/layout/DashboardContent.svelte';
+	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 
 	import { accounts, emails } from '$lib/data/mock';
 	import { getStatusLabel } from '$lib/utils/account';
@@ -69,28 +65,20 @@
 		onExport={exportMarkdown}
 	/>
 
-	<main class="main-content">
-		<header class="topbar">
-			<div>
-				<p class="eyebrow">Desktop local app</p>
-				<h2>Dashboard Akun</h2>
-				<p>Pantau email induk, akun game, sosmed, dan status keamanan dasar.</p>
-			</div>
-			<div class="action-row">
-				<button class="secondary" onclick={exportMarkdown}>Export</button>
-				<button class="primary">+ Tambah Akun</button>
-			</div>
-		</header>
-
-		<StatGrid {totalEmails} {totalAccounts} {activeTwoFactor} {needAudit} {safeEmails} />
-
-		<Toolbar {emails} bind:search bind:selectedCategory bind:selectedEmail />
-
-		<section class="workspace">
-			<AccountList {emails} accounts={filteredAccounts} bind:selectedAccountId />
-			<EmailList {emails} bind:selectedEmail />
-		</section>
-	</main>
-
-	<DetailPanel account={selectedAccount} email={selectedEmailItem} onExport={exportMarkdown} />
+	<DashboardContent
+		{emails}
+		accounts={filteredAccounts}
+		{totalEmails}
+		{totalAccounts}
+		{activeTwoFactor}
+		{needAudit}
+		{safeEmails}
+		account={selectedAccount}
+		email={selectedEmailItem}
+		bind:search
+		bind:selectedCategory
+		bind:selectedEmail
+		bind:selectedAccountId
+		onExport={exportMarkdown}
+	/>
 </div>

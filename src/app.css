@@ -29,8 +29,14 @@ button {
 
 .app-shell {
 	display: grid;
-	grid-template-columns: 280px minmax(0, 1fr) 360px;
+	grid-template-columns: 280px minmax(0, 1fr);
 	min-height: 100vh;
+}
+
+.content-shell {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 360px;
+	min-width: 0;
 }
 
 .sidebar,
@@ -377,14 +383,18 @@ dd {
 		grid-template-columns: 240px minmax(0, 1fr);
 	}
 
+	.content-shell {
+		grid-template-columns: 1fr;
+	}
+
 	.detail-panel {
-		grid-column: 1 / -1;
 		border-width: 1px 0 0;
 	}
 }
 
 @media (max-width: 760px) {
 	.app-shell,
+	.content-shell,
 	.workspace,
 	.stats-grid,
 	.toolbar {
