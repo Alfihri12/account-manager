@@ -2,7 +2,7 @@ use tauri::AppHandle;
 
 use crate::{
     db,
-    models::{CreateEmailInput, EmailItem, UpdateEmailInput},
+    models::{CreateEmailInput, DeleteResult, EmailItem, UpdateEmailInput},
 };
 
 #[derive(sqlx::FromRow)]
@@ -132,6 +132,25 @@ pub async fn update_email(
     Ok(email.into())
 }
 
+#[tauri::command]
+pub async fn delete_email(app: AppHandle, id: i64) -> Result<DeleteResult, String> {
+    let pool = db::initialized_pool(&app).await?;
+    let result = sqlx::query("DELETE FROM emails WHERE id = ?")
+        .bind(id)
+        .execute(&pool)
+        .await
+        .map_err(map_delete_email_error)?;
+
+    if result.rows_affected() == 0 {
+        return Err("Email tidak ditemukan".to_string());
+    }
+
+    Ok(DeleteResult {
+        id,
+        message: "Email berhasil dihapus".to_string(),
+    })
+}
+
 async fn select_emails(pool: &sqlx::SqlitePool) -> Result<Vec<EmailRow>, String> {
     sqlx::query_as::<_, EmailRow>(
         r#"
@@ -218,6 +237,20 @@ async fn ensure_email_exists(pool: &sqlx::SqlitePool, email_id: i64) -> Result<(
     }
 
     Ok(())
+}
+
+fn map_delete_email_error(error: sqlx::Error) -> String {
+    match &error {
+        sqlx::Error::Database(database_error)
+            if database_error.code().as_deref() == Some("787")
+                || database_error
+                    .message()
+                    .contains("FOREIGN KEY constraint failed") =>
+        {
+            "Email masih digunakan oleh akun lain".to_string()
+        }
+        _ => error.to_string(),
+    }
 }
 
 fn validate_create_email(input: &CreateEmailInput) -> Result<(), String> {

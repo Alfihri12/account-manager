@@ -13,6 +13,11 @@ export type DatabaseHealth = {
 	path: string;
 };
 
+export type DeleteResult = {
+	id: number;
+	message: string;
+};
+
 export async function pingRust() {
 	return invoke<string>('ping');
 }
@@ -43,4 +48,12 @@ export async function updateEmailInTauri(id: number, input: UpdateEmailInput) {
 
 export async function updateAccountInTauri(id: number, input: UpdateAccountInput) {
 	return invoke<AccountItem>('update_account', { id, input });
+}
+
+export async function deleteAccountInTauri(id: number) {
+	return invoke<DeleteResult>('delete_account', { id });
+}
+
+export async function deleteEmailInTauri(id: number) {
+	return invoke<DeleteResult>('delete_email', { id });
 }

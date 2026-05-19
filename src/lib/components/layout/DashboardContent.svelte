@@ -55,6 +55,8 @@
 		onTestSqliteCreateAccount: () => void | Promise<void>;
 		onTestSqliteUpdateEmail: () => void | Promise<void>;
 		onTestSqliteUpdateAccount: () => void | Promise<void>;
+		onTestSqliteDeleteAccount: () => void | Promise<void>;
+		onTestSqliteDeleteEmail: () => void | Promise<void>;
 	};
 
 	let {
@@ -92,7 +94,9 @@
 		onTestSqliteCreateEmail,
 		onTestSqliteCreateAccount,
 		onTestSqliteUpdateEmail,
-		onTestSqliteUpdateAccount
+		onTestSqliteUpdateAccount,
+		onTestSqliteDeleteAccount,
+		onTestSqliteDeleteEmail
 	}: Props = $props();
 
 	let dialogMode = $state<DialogMode>(null);
@@ -257,6 +261,8 @@
 				{onTestSqliteCreateAccount}
 				{onTestSqliteUpdateEmail}
 				{onTestSqliteUpdateAccount}
+				{onTestSqliteDeleteAccount}
+				{onTestSqliteDeleteEmail}
 			/>
 		{:else if selectedMenu === 'emails'}
 			<section class="email-page">

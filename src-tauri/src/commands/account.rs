@@ -2,7 +2,7 @@ use tauri::AppHandle;
 
 use crate::{
     db,
-    models::{AccountItem, CreateAccountInput, UpdateAccountInput},
+    models::{AccountItem, CreateAccountInput, DeleteResult, UpdateAccountInput},
 };
 
 #[derive(sqlx::FromRow)]
@@ -181,6 +181,25 @@ pub async fn update_account(
     let account = select_account_by_id(&pool, id).await?;
 
     account.try_into()
+}
+
+#[tauri::command]
+pub async fn delete_account(app: AppHandle, id: i64) -> Result<DeleteResult, String> {
+    let pool = db::initialized_pool(&app).await?;
+    let result = sqlx::query("DELETE FROM accounts WHERE id = ?")
+        .bind(id)
+        .execute(&pool)
+        .await
+        .map_err(|error| error.to_string())?;
+
+    if result.rows_affected() == 0 {
+        return Err("Akun tidak ditemukan".to_string());
+    }
+
+    Ok(DeleteResult {
+        id,
+        message: "Akun berhasil dihapus".to_string(),
+    })
 }
 
 async fn select_accounts(pool: &sqlx::SqlitePool) -> Result<Vec<AccountRow>, String> {

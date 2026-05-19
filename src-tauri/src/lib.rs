@@ -23,9 +23,11 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             ping,
             commands::account::create_account,
+            commands::account::delete_account,
             commands::account::get_accounts,
             commands::account::update_account,
             commands::email::create_email,
+            commands::email::delete_email,
             commands::email::get_emails,
             commands::email::update_email,
             commands::health::init_database

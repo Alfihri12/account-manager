@@ -6,6 +6,13 @@ pub struct DatabaseHealth {
 
 #[derive(Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct DeleteResult {
+    pub id: i64,
+    pub message: String,
+}
+
+#[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct EmailItem {
     pub id: i64,
     pub label: String,

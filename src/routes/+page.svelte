@@ -5,6 +5,8 @@
 	import {
 		createAccountInTauri,
 		createEmailInTauri,
+		deleteAccountInTauri,
+		deleteEmailInTauri,
 		getAccountsFromTauri,
 		getEmailsFromTauri,
 		initDatabase,
@@ -391,6 +393,46 @@
 		}
 	}
 
+	async function handleTestSqliteDeleteAccount() {
+		try {
+			const accounts = await getAccountsFromTauri();
+			const account = accounts[0];
+
+			if (!account) {
+				toastStore.error('Buat account SQLite dulu sebelum delete account.');
+				return;
+			}
+
+			const result = await deleteAccountInTauri(account.id);
+			console.log(result);
+			toastStore.success(JSON.stringify(result));
+		} catch (error) {
+			toastStore.error(
+				getErrorMessage(error, 'Gagal delete account SQLite. Jalankan lewat Tauri dev.')
+			);
+		}
+	}
+
+	async function handleTestSqliteDeleteEmail() {
+		try {
+			const emails = await getEmailsFromTauri();
+			const email = emails[0];
+
+			if (!email) {
+				toastStore.error('Buat email SQLite dulu sebelum delete email.');
+				return;
+			}
+
+			const result = await deleteEmailInTauri(email.id);
+			console.log(result);
+			toastStore.success(JSON.stringify(result));
+		} catch (error) {
+			toastStore.error(
+				getErrorMessage(error, 'Gagal delete email SQLite. Jalankan lewat Tauri dev.')
+			);
+		}
+	}
+
 	function getErrorMessage(error: unknown, fallback: string) {
 		return error instanceof Error ? error.message : fallback;
 	}
@@ -447,6 +489,8 @@
 		onTestSqliteCreateAccount={handleTestSqliteCreateAccount}
 		onTestSqliteUpdateEmail={handleTestSqliteUpdateEmail}
 		onTestSqliteUpdateAccount={handleTestSqliteUpdateAccount}
+		onTestSqliteDeleteAccount={handleTestSqliteDeleteAccount}
+		onTestSqliteDeleteEmail={handleTestSqliteDeleteEmail}
 	/>
 
 	<Toast />
