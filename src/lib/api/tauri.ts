@@ -1,5 +1,10 @@
 import { invoke } from '@tauri-apps/api/core';
-import type { AccountItem, EmailItem } from '$lib/types/account';
+import type {
+	AccountItem,
+	CreateAccountInput,
+	CreateEmailInput,
+	EmailItem
+} from '$lib/types/account';
 
 export type DatabaseHealth = {
 	message: string;
@@ -20,4 +25,12 @@ export async function getEmailsFromTauri() {
 
 export async function getAccountsFromTauri() {
 	return invoke<AccountItem[]>('get_accounts');
+}
+
+export async function createEmailInTauri(input: CreateEmailInput) {
+	return invoke<EmailItem>('create_email', { input });
+}
+
+export async function createAccountInTauri(input: CreateAccountInput) {
+	return invoke<AccountItem>('create_account', { input });
 }

@@ -2,7 +2,14 @@
 	import DashboardContent from '$lib/components/layout/DashboardContent.svelte';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import Toast from '$lib/components/ui/Toast.svelte';
-	import { getAccountsFromTauri, getEmailsFromTauri, initDatabase, pingRust } from '$lib/api/tauri';
+	import {
+		createAccountInTauri,
+		createEmailInTauri,
+		getAccountsFromTauri,
+		getEmailsFromTauri,
+		initDatabase,
+		pingRust
+	} from '$lib/api/tauri';
 	import {
 		downloadBackupJson,
 		exportBackupJson,
@@ -252,6 +259,63 @@
 		}
 	}
 
+	async function handleTestSqliteCreateEmail() {
+		try {
+			const suffix = Date.now();
+			const result = await createEmailInTauri({
+				label: `Debug Email ${suffix}`,
+				address: `debug-${suffix}@example.test`,
+				provider: 'Debug Provider',
+				purpose: 'SQLite create command test',
+				twoFactor: true,
+				recovery: 'Debug recovery note',
+				status: 'audit'
+			});
+
+			console.log(result);
+			toastStore.success(JSON.stringify(result));
+		} catch (error) {
+			toastStore.error(
+				getErrorMessage(error, 'Gagal create email SQLite. Jalankan lewat Tauri dev.')
+			);
+		}
+	}
+
+	async function handleTestSqliteCreateAccount() {
+		try {
+			const emails = await getEmailsFromTauri();
+			const email = emails[0];
+
+			if (!email) {
+				toastStore.error('Buat email SQLite dulu sebelum create account.');
+				return;
+			}
+
+			const suffix = Date.now();
+			const result = await createAccountInTauri({
+				name: `Debug Account ${suffix}`,
+				category: 'game',
+				platform: 'Debug Platform',
+				username: `debug-user-${suffix}`,
+				userId: `debug-${suffix}`,
+				loginMethod: 'Email Password',
+				linkedEmailId: email.id,
+				passwordLocation: 'Debug password manager',
+				twoFactor: false,
+				status: 'need_check',
+				tags: ['debug', 'sqlite'],
+				notes: 'Created from Settings SQLite debug button.'
+			});
+
+			console.log(result);
+			toastStore.success(JSON.stringify(result));
+		} catch (error) {
+			toastStore.error(
+				getErrorMessage(error, 'Gagal create account SQLite. Jalankan lewat Tauri dev.')
+			);
+		}
+	}
+
 	function getErrorMessage(error: unknown, fallback: string) {
 		return error instanceof Error ? error.message : fallback;
 	}
@@ -304,6 +368,8 @@
 		onInitDatabase={handleInitDatabase}
 		onTestSqliteGetEmails={handleTestSqliteGetEmails}
 		onTestSqliteGetAccounts={handleTestSqliteGetAccounts}
+		onTestSqliteCreateEmail={handleTestSqliteCreateEmail}
+		onTestSqliteCreateAccount={handleTestSqliteCreateAccount}
 	/>
 
 	<Toast />

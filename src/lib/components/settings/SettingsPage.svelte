@@ -12,6 +12,8 @@
 		onInitDatabase: () => void | Promise<void>;
 		onTestSqliteGetEmails: () => void | Promise<void>;
 		onTestSqliteGetAccounts: () => void | Promise<void>;
+		onTestSqliteCreateEmail: () => void | Promise<void>;
+		onTestSqliteCreateAccount: () => void | Promise<void>;
 	};
 
 	let {
@@ -26,7 +28,9 @@
 		onPingRust,
 		onInitDatabase,
 		onTestSqliteGetEmails,
-		onTestSqliteGetAccounts
+		onTestSqliteGetAccounts,
+		onTestSqliteCreateEmail,
+		onTestSqliteCreateAccount
 	}: Props = $props();
 
 	let fileInput = $state<HTMLInputElement>();
@@ -117,8 +121,14 @@
 			<button class="secondary" disabled={loading} onclick={onInitDatabase}
 				>Test database init</button
 			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteCreateEmail}
+				>Test SQLite create email</button
+			>
 			<button class="secondary" disabled={loading} onclick={onTestSqliteGetEmails}
 				>Test SQLite get emails</button
+			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteCreateAccount}
+				>Test SQLite create account</button
 			>
 			<button class="secondary" disabled={loading} onclick={onTestSqliteGetAccounts}
 				>Test SQLite get accounts</button

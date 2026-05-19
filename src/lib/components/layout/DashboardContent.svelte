@@ -51,6 +51,8 @@
 		onInitDatabase: () => void | Promise<void>;
 		onTestSqliteGetEmails: () => void | Promise<void>;
 		onTestSqliteGetAccounts: () => void | Promise<void>;
+		onTestSqliteCreateEmail: () => void | Promise<void>;
+		onTestSqliteCreateAccount: () => void | Promise<void>;
 	};
 
 	let {
@@ -84,7 +86,9 @@
 		onPingRust,
 		onInitDatabase,
 		onTestSqliteGetEmails,
-		onTestSqliteGetAccounts
+		onTestSqliteGetAccounts,
+		onTestSqliteCreateEmail,
+		onTestSqliteCreateAccount
 	}: Props = $props();
 
 	let dialogMode = $state<DialogMode>(null);
@@ -245,6 +249,8 @@
 				{onInitDatabase}
 				{onTestSqliteGetEmails}
 				{onTestSqliteGetAccounts}
+				{onTestSqliteCreateEmail}
+				{onTestSqliteCreateAccount}
 			/>
 		{:else if selectedMenu === 'emails'}
 			<section class="email-page">
