@@ -1,4 +1,5 @@
 import * as accountRepository from '$lib/repositories/account-repository';
+import { initializeAppStorage } from '$lib/services/app-init-service';
 import type { AccountItem, CreateAccountInput, UpdateAccountInput } from '$lib/types/account';
 
 let accounts = $state<AccountItem[]>(accountRepository.getAccountsSnapshot());
@@ -11,6 +12,7 @@ export function useAccountStore() {
 		loading = true;
 
 		try {
+			await initializeAppStorage();
 			accounts = await accountRepository.getAccounts();
 			error = null;
 		} catch (err) {

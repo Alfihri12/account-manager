@@ -47,6 +47,16 @@
 		onImportBackup: (file: File) => void | Promise<void>;
 		onResetSample: () => void | Promise<void>;
 		onClearLocalData: () => void | Promise<void>;
+		onPingRust: () => void | Promise<void>;
+		onInitDatabase: () => void | Promise<void>;
+		onTestSqliteGetEmails: () => void | Promise<void>;
+		onTestSqliteGetAccounts: () => void | Promise<void>;
+		onTestSqliteCreateEmail: () => void | Promise<void>;
+		onTestSqliteCreateAccount: () => void | Promise<void>;
+		onTestSqliteUpdateEmail: () => void | Promise<void>;
+		onTestSqliteUpdateAccount: () => void | Promise<void>;
+		onTestSqliteDeleteAccount: () => void | Promise<void>;
+		onTestSqliteDeleteEmail: () => void | Promise<void>;
 	};
 
 	let {
@@ -76,7 +86,17 @@
 		onExportBackup,
 		onImportBackup,
 		onResetSample,
-		onClearLocalData
+		onClearLocalData,
+		onPingRust,
+		onInitDatabase,
+		onTestSqliteGetEmails,
+		onTestSqliteGetAccounts,
+		onTestSqliteCreateEmail,
+		onTestSqliteCreateAccount,
+		onTestSqliteUpdateEmail,
+		onTestSqliteUpdateAccount,
+		onTestSqliteDeleteAccount,
+		onTestSqliteDeleteEmail
 	}: Props = $props();
 
 	let dialogMode = $state<DialogMode>(null);
@@ -233,6 +253,16 @@
 				{onImportBackup}
 				{onResetSample}
 				{onClearLocalData}
+				{onPingRust}
+				{onInitDatabase}
+				{onTestSqliteGetEmails}
+				{onTestSqliteGetAccounts}
+				{onTestSqliteCreateEmail}
+				{onTestSqliteCreateAccount}
+				{onTestSqliteUpdateEmail}
+				{onTestSqliteUpdateAccount}
+				{onTestSqliteDeleteAccount}
+				{onTestSqliteDeleteEmail}
 			/>
 		{:else if selectedMenu === 'emails'}
 			<section class="email-page">

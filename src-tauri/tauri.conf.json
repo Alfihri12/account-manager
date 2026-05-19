@@ -1,0 +1,43 @@
+{
+	"$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+	"productName": "Account Manager",
+	"version": "0.1.0",
+	"identifier": "com.alfihri.accountmanager",
+	"build": {
+		"frontendDist": "../build",
+		"devUrl": "http://localhost:5173",
+		"beforeDevCommand": "npm run dev -- --port 5173 --strictPort",
+		"beforeBuildCommand": "npm run build"
+	},
+	"app": {
+		"windows": [
+			{
+				"title": "Akun Manager",
+				"width": 1100,
+				"height": 720,
+				"minWidth": 360,
+				"minHeight": 520,
+				"resizable": true,
+				"fullscreen": false,
+				"theme": "Dark"
+			}
+		],
+		"security": {
+			"csp": null
+		}
+	},
+	"bundle": {
+		"active": true,
+		"targets": "all",
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		],
+		"android": {
+			"debugApplicationIdSuffix": ".debug"
+		}
+	}
+}

@@ -1,4 +1,5 @@
 import * as emailRepository from '$lib/repositories/email-repository';
+import { initializeAppStorage } from '$lib/services/app-init-service';
 import { useAccountStore } from '$lib/stores/account-store.svelte';
 import type { CreateEmailInput, EmailItem, UpdateEmailInput } from '$lib/types/account';
 
@@ -14,6 +15,7 @@ export function useEmailStore() {
 		loading = true;
 
 		try {
+			await initializeAppStorage();
 			emails = await emailRepository.getEmails();
 			error = null;
 		} catch (err) {

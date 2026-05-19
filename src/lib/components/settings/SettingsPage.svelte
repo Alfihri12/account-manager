@@ -8,6 +8,16 @@
 		onImportBackup: (file: File) => void | Promise<void>;
 		onResetSample: () => void | Promise<void>;
 		onClearLocalData: () => void | Promise<void>;
+		onPingRust: () => void | Promise<void>;
+		onInitDatabase: () => void | Promise<void>;
+		onTestSqliteGetEmails: () => void | Promise<void>;
+		onTestSqliteGetAccounts: () => void | Promise<void>;
+		onTestSqliteCreateEmail: () => void | Promise<void>;
+		onTestSqliteCreateAccount: () => void | Promise<void>;
+		onTestSqliteUpdateEmail: () => void | Promise<void>;
+		onTestSqliteUpdateAccount: () => void | Promise<void>;
+		onTestSqliteDeleteAccount: () => void | Promise<void>;
+		onTestSqliteDeleteEmail: () => void | Promise<void>;
 	};
 
 	let {
@@ -18,7 +28,17 @@
 		onExportBackup,
 		onImportBackup,
 		onResetSample,
-		onClearLocalData
+		onClearLocalData,
+		onPingRust,
+		onInitDatabase,
+		onTestSqliteGetEmails,
+		onTestSqliteGetAccounts,
+		onTestSqliteCreateEmail,
+		onTestSqliteCreateAccount,
+		onTestSqliteUpdateEmail,
+		onTestSqliteUpdateAccount,
+		onTestSqliteDeleteAccount,
+		onTestSqliteDeleteEmail
 	}: Props = $props();
 
 	let fileInput = $state<HTMLInputElement>();
@@ -95,6 +115,44 @@
 		<div>
 			<h3>Security</h3>
 			<p>Mode password: lokasi saja. Jangan simpan password asli di aplikasi ini.</p>
+		</div>
+	</section>
+
+	<section class="settings-section">
+		<div>
+			<h3>Tauri Bridge</h3>
+			<p>Tes koneksi frontend ke Rust, inisialisasi SQLite, dan command read awal.</p>
+		</div>
+
+		<div class="settings-actions">
+			<button class="secondary" disabled={loading} onclick={onPingRust}>Test Rust ping</button>
+			<button class="secondary" disabled={loading} onclick={onInitDatabase}
+				>Test database init</button
+			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteCreateEmail}
+				>Test SQLite create email</button
+			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteGetEmails}
+				>Test SQLite get emails</button
+			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteUpdateEmail}
+				>Test SQLite update email</button
+			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteCreateAccount}
+				>Test SQLite create account</button
+			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteGetAccounts}
+				>Test SQLite get accounts</button
+			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteUpdateAccount}
+				>Test SQLite update account</button
+			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteDeleteAccount}
+				>Test SQLite delete account</button
+			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteDeleteEmail}
+				>Test SQLite delete email</button
+			>
 		</div>
 	</section>
 </section>

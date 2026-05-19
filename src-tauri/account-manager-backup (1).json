@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "exportedAt": "2026-05-19T04:10:12.731Z",
+  "emails": [
+    {
+      "id": 2,
+      "label": "fahrimurobbi24",
+      "address": "fahrimurobbi24@gmail.com",
+      "provider": "Gmail",
+      "purpose": "akun lama",
+      "twoFactor": false,
+      "accountCount": 0,
+      "recovery": "082228188400",
+      "status": "safe",
+      "createdAt": "2026-05-19T03:52:59.787876016+00:00",
+      "updatedAt": "2026-05-19T03:53:28.816703972+00:00"
+    },
+    {
+      "id": 1,
+      "label": "alfihri221",
+      "address": "alfihri221@gmail.com",
+      "provider": "Gmail",
+      "purpose": "",
+      "twoFactor": true,
+      "accountCount": 0,
+      "recovery": "082228188400",
+      "status": "safe",
+      "createdAt": "2026-05-19T03:51:41.596854730+00:00",
+      "updatedAt": "2026-05-19T03:53:17.930638658+00:00"
+    }
+  ],
+  "accounts": []
+}
