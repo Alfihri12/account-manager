@@ -73,14 +73,12 @@
 	const socialCount = $derived(accounts.filter((account) => account.category === 'sosmed').length);
 	const loading = $derived(accountStore.loading || emailStore.loading);
 	const error = $derived(accountStore.error ?? emailStore.error);
+	let initialDataLoadStarted = $state(false);
 
 	$effect(() => {
-		if (!accountStore.initialized && !accountStore.loading) {
-			void accountStore.loadAccounts();
-		}
-
-		if (!emailStore.initialized && !emailStore.loading) {
-			void emailStore.loadEmails();
+		if (!initialDataLoadStarted) {
+			initialDataLoadStarted = true;
+			void loadInitialData();
 		}
 	});
 
@@ -106,6 +104,11 @@
 
 		console.log(accountToMarkdown(selectedAccount, selectedEmailItem));
 		toastStore.success('Markdown akun berhasil dibuat di console.');
+	}
+
+	async function loadInitialData() {
+		await emailStore.loadEmails();
+		await accountStore.loadAccounts();
 	}
 
 	async function handleCreateAccount(data: AccountFormData) {
