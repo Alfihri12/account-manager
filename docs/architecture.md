@@ -43,6 +43,18 @@ app-shell
     └── DetailPanel
 ```
 
+Data awal diambil dari `src/lib/data/mock.ts` melalui service:
+
+```txt
+mock data → service → local state di +page.svelte → komponen UI
+```
+
+Service yang tersedia:
+
+- `account-service.ts`: mengambil, membuat, mengubah, menghapus, dan memfilter akun berdasarkan email.
+- `email-service.ts`: mengambil, membuat, mengubah, menghapus, dan menghitung jumlah akun per email.
+- `export-service.ts`: mengubah data akun menjadi Markdown.
+
 Komponen child yang perlu mengubah state memakai bindable props Svelte 5, contohnya:
 
 ```svelte
@@ -62,6 +74,7 @@ Komponen child yang perlu mengubah state memakai bindable props Svelte 5, contoh
 | `src/lib/components/email/`      | List email dan card email.                            |
 | `src/lib/components/ui/`         | Komponen UI kecil yang reusable.                      |
 | `src/lib/data/`                  | Sumber data sementara.                                |
+| `src/lib/services/`              | Operasi data lokal sebelum nanti diganti backend/API. |
 | `src/lib/types/`                 | TypeScript type untuk domain akun.                    |
 | `src/lib/utils/`                 | Helper domain akun.                                   |
 

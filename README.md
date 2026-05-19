@@ -11,6 +11,7 @@ Project ini dibuat dengan SvelteKit, Svelte 5 runes, TypeScript, Vite, ESLint, d
 - Relasi akun ke email induk.
 - Panel detail akun berisi platform, username, metode login, email, lokasi password, 2FA, tag, dan catatan.
 - Export akun terpilih ke format Markdown untuk Obsidian atau catatan lokal.
+- Tambah/edit akun dan email induk lewat modal.
 - Struktur komponen modular supaya gampang dikembangkan.
 
 ## Quick Start
@@ -62,6 +63,7 @@ src/lib/
 │   ├── navigation/
 │   └── ui/
 ├── data/
+├── services/
 ├── types/
 └── utils/
 ```
@@ -72,6 +74,7 @@ File penting:
 - `src/lib/components/layout/DashboardContent.svelte`: layout konten dashboard.
 - `src/lib/components/layout/Sidebar.svelte`: sidebar navigasi dan tools.
 - `src/lib/data/mock.ts`: data sementara akun dan email.
+- `src/lib/services/`: service lokal untuk akun, email, dan export.
 - `src/lib/types/account.ts`: tipe data akun dan email.
 - `src/lib/utils/account.ts`: helper label dan ikon akun.
 
@@ -87,4 +90,4 @@ Aplikasi ini untuk tracking lokal. Jangan simpan password asli, recovery code, t
 
 ## Status
 
-Saat ini data masih memakai mock statis di `src/lib/data/mock.ts`. Langkah pengembangan berikutnya bisa diarahkan ke storage lokal, import/export JSON, atau integrasi database lokal.
+Saat ini data awal masih berasal dari `src/lib/data/mock.ts`, lalu dikelola sebagai local state lewat service di `src/lib/services/`. Langkah pengembangan berikutnya bisa diarahkan ke storage lokal, import/export JSON, atau integrasi database lokal.

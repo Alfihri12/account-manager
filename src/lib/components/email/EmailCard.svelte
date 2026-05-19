@@ -6,19 +6,25 @@
 		email: EmailItem;
 		selected: boolean;
 		onSelect: () => void;
+		onEdit: () => void;
 	};
 
-	let { email, selected, onSelect }: Props = $props();
+	let { email, selected, onSelect, onEdit }: Props = $props();
 </script>
 
-<button class="email-card" class:selected onclick={onSelect}>
-	<div>
-		<strong>{email.label}</strong>
-		<p>{email.accountCount} akun · Recovery: {email.recovery}</p>
-	</div>
+<article class="email-card" class:selected>
+	<button class="card-main" onclick={onSelect}>
+		<div>
+			<strong>{email.label}</strong>
+			<p>{email.accountCount} akun · Recovery: {email.recovery}</p>
+		</div>
+	</button>
 
-	<StatusBadge
-		variant={email.status === 'safe' ? 'good' : 'warn'}
-		label={email.status === 'safe' ? 'aman' : 'audit'}
-	/>
-</button>
+	<div class="card-actions">
+		<StatusBadge
+			variant={email.status === 'safe' ? 'good' : 'warn'}
+			label={email.status === 'safe' ? 'aman' : 'audit'}
+		/>
+		<button class="mini-button" onclick={onEdit}>Edit</button>
+	</div>
+</article>

@@ -3,12 +3,14 @@
 		title?: string;
 		description?: string;
 		onExport: () => void;
+		onAddAccount: () => void;
 	};
 
 	let {
 		title = 'Dashboard Akun',
 		description = 'Pantau email induk, akun game, sosmed, dan status keamanan dasar.',
-		onExport
+		onExport,
+		onAddAccount
 	}: Props = $props();
 </script>
 
@@ -21,6 +23,6 @@
 
 	<div class="action-row">
 		<button class="secondary" onclick={onExport}>Export</button>
-		<button class="primary">+ Tambah Akun</button>
+		<button class="primary" onclick={onAddAccount}>+ Tambah Akun</button>
 	</div>
 </header>

@@ -8,9 +8,10 @@
 		account: AccountItem;
 		email?: EmailItem;
 		onExport: () => void;
+		onEdit: () => void;
 	};
 
-	let { account, email, onExport }: Props = $props();
+	let { account, email, onExport, onEdit }: Props = $props();
 </script>
 
 <aside class="detail-panel">
@@ -55,7 +56,7 @@
 	</section>
 
 	<div class="detail-actions">
-		<button class="secondary">Edit</button>
+		<button class="secondary" onclick={onEdit}>Edit</button>
 		<button class="primary" onclick={onExport}>Export MD</button>
 	</div>
 </aside>

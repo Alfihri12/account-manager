@@ -1,15 +1,29 @@
 <script lang="ts">
 	import DashboardContent from '$lib/components/layout/DashboardContent.svelte';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
-
-	import { accounts, emails } from '$lib/data/mock';
-	import { getStatusLabel } from '$lib/utils/account';
+	import {
+		createAccount,
+		getAccounts,
+		updateAccount,
+		type AccountFormData
+	} from '$lib/services/account-service';
+	import {
+		createEmail,
+		getEmails,
+		updateEmail,
+		withAccountCounts
+	} from '$lib/services/email-service';
+	import { accountToMarkdown } from '$lib/services/export-service';
+	import type { EmailFormData } from '$lib/services/email-service';
 
 	let selectedMenu = $state('dashboard');
 	let search = $state('');
 	let selectedCategory = $state('all');
 	let selectedEmail = $state('all');
 	let selectedAccountId = $state(1);
+	let accounts = $state(getAccounts());
+	let storedEmails = $state(getEmails());
+	const emails = $derived(withAccountCounts(storedEmails, accounts));
 
 	const selectedAccount = $derived(
 		accounts.find((account) => account.id === selectedAccountId) ?? accounts[0]
@@ -60,10 +74,27 @@
 	});
 
 	function exportMarkdown() {
-		const email = selectedEmailItem?.label ?? '-';
-		const markdown = `# ${selectedAccount.name}\n\nKategori: ${selectedAccount.category}\nPlatform: ${selectedAccount.platform}\nUsername: ${selectedAccount.username}\nLogin via: ${selectedAccount.loginMethod}\nEmail Terhubung: [[${email}]]\nPassword: lihat ${selectedAccount.passwordLocation}\n2FA: ${selectedAccount.twoFactor ? 'Aktif' : 'Belum aktif'}\nStatus: ${getStatusLabel(selectedAccount.status)}\n\n## Catatan\n${selectedAccount.notes}\n`;
+		console.log(accountToMarkdown(selectedAccount, selectedEmailItem));
+	}
 
-		console.log(markdown);
+	function handleCreateAccount(data: AccountFormData) {
+		accounts = createAccount(accounts, data);
+		selectedAccountId = accounts.at(-1)?.id ?? selectedAccountId;
+	}
+
+	function handleUpdateAccount(id: number, data: AccountFormData) {
+		accounts = updateAccount(accounts, id, data);
+		selectedAccountId = id;
+	}
+
+	function handleCreateEmail(data: EmailFormData) {
+		storedEmails = createEmail(storedEmails, data);
+		selectedEmail = String(storedEmails.at(-1)?.id ?? 'all');
+	}
+
+	function handleUpdateEmail(id: number, data: EmailFormData) {
+		storedEmails = updateEmail(storedEmails, id, data);
+		selectedEmail = String(id);
 	}
 </script>
 
@@ -97,5 +128,9 @@
 		bind:selectedEmail
 		bind:selectedAccountId
 		onExport={exportMarkdown}
+		onCreateAccount={handleCreateAccount}
+		onUpdateAccount={handleUpdateAccount}
+		onCreateEmail={handleCreateEmail}
+		onUpdateEmail={handleUpdateEmail}
 	/>
 </div>

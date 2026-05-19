@@ -64,6 +64,10 @@ Card statistik kecil dengan `label`, `value`, dan `note`.
 
 ## Account
 
+### `account/AccountForm.svelte`
+
+Form tambah/edit akun. Validasi minimal: nama akun, platform, kategori, email terhubung, dan status.
+
 ### `account/AccountList.svelte`
 
 Panel daftar akun. Bertugas render header list, empty state, dan kumpulan `AccountCard`.
@@ -82,6 +86,10 @@ Row kecil untuk pasangan label dan value di detail akun.
 
 ## Email
 
+### `email/EmailForm.svelte`
+
+Form tambah/edit email induk. Validasi minimal: label email, alamat email, dan status.
+
 ### `email/EmailList.svelte`
 
 Panel daftar email induk. Bertugas render kumpulan `EmailCard`.
@@ -99,6 +107,10 @@ Ringkasan detail semua email induk, termasuk provider, purpose, recovery, 2FA, j
 ### `ui/Toolbar.svelte`
 
 Filter akun berdasarkan keyword, kategori, dan email induk. Props `search`, `selectedCategory`, dan `selectedEmail` dibuat bindable.
+
+### `ui/Modal.svelte`
+
+Modal reusable untuk form tambah/edit.
 
 ### `ui/StatusBadge.svelte`
 
