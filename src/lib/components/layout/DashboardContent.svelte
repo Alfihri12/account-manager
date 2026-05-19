@@ -47,6 +47,7 @@
 		onImportBackup: (file: File) => void | Promise<void>;
 		onResetSample: () => void | Promise<void>;
 		onClearLocalData: () => void | Promise<void>;
+		onPingRust: () => void | Promise<void>;
 	};
 
 	let {
@@ -76,7 +77,8 @@
 		onExportBackup,
 		onImportBackup,
 		onResetSample,
-		onClearLocalData
+		onClearLocalData,
+		onPingRust
 	}: Props = $props();
 
 	let dialogMode = $state<DialogMode>(null);
@@ -233,6 +235,7 @@
 				{onImportBackup}
 				{onResetSample}
 				{onClearLocalData}
+				{onPingRust}
 			/>
 		{:else if selectedMenu === 'emails'}
 			<section class="email-page">

@@ -8,6 +8,7 @@
 		onImportBackup: (file: File) => void | Promise<void>;
 		onResetSample: () => void | Promise<void>;
 		onClearLocalData: () => void | Promise<void>;
+		onPingRust: () => void | Promise<void>;
 	};
 
 	let {
@@ -18,7 +19,8 @@
 		onExportBackup,
 		onImportBackup,
 		onResetSample,
-		onClearLocalData
+		onClearLocalData,
+		onPingRust
 	}: Props = $props();
 
 	let fileInput = $state<HTMLInputElement>();
@@ -95,6 +97,17 @@
 		<div>
 			<h3>Security</h3>
 			<p>Mode password: lokasi saja. Jangan simpan password asli di aplikasi ini.</p>
+		</div>
+	</section>
+
+	<section class="settings-section">
+		<div>
+			<h3>Tauri Bridge</h3>
+			<p>Tes koneksi frontend ke Rust sebelum masuk SQLite.</p>
+		</div>
+
+		<div class="settings-actions">
+			<button class="secondary" disabled={loading} onclick={onPingRust}>Test Rust ping</button>
 		</div>
 	</section>
 </section>

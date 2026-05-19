@@ -2,6 +2,7 @@
 	import DashboardContent from '$lib/components/layout/DashboardContent.svelte';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import Toast from '$lib/components/ui/Toast.svelte';
+	import { pingRust } from '$lib/api/tauri';
 	import {
 		downloadBackupJson,
 		exportBackupJson,
@@ -207,6 +208,16 @@
 		}
 	}
 
+	async function handlePingRust() {
+		try {
+			const result = await pingRust();
+			console.log(result);
+			toastStore.success(result);
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal ping Rust. Jalankan lewat Tauri dev.'));
+		}
+	}
+
 	function getErrorMessage(error: unknown, fallback: string) {
 		return error instanceof Error ? error.message : fallback;
 	}
@@ -255,6 +266,7 @@
 		onImportBackup={handleImportBackup}
 		onResetSample={handleResetSample}
 		onClearLocalData={handleClearLocalData}
+		onPingRust={handlePingRust}
 	/>
 
 	<Toast />
