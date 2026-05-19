@@ -49,6 +49,8 @@
 		onClearLocalData: () => void | Promise<void>;
 		onPingRust: () => void | Promise<void>;
 		onInitDatabase: () => void | Promise<void>;
+		onTestSqliteGetEmails: () => void | Promise<void>;
+		onTestSqliteGetAccounts: () => void | Promise<void>;
 	};
 
 	let {
@@ -80,7 +82,9 @@
 		onResetSample,
 		onClearLocalData,
 		onPingRust,
-		onInitDatabase
+		onInitDatabase,
+		onTestSqliteGetEmails,
+		onTestSqliteGetAccounts
 	}: Props = $props();
 
 	let dialogMode = $state<DialogMode>(null);
@@ -239,6 +243,8 @@
 				{onClearLocalData}
 				{onPingRust}
 				{onInitDatabase}
+				{onTestSqliteGetEmails}
+				{onTestSqliteGetAccounts}
 			/>
 		{:else if selectedMenu === 'emails'}
 			<section class="email-page">

@@ -2,7 +2,7 @@
 	import DashboardContent from '$lib/components/layout/DashboardContent.svelte';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import Toast from '$lib/components/ui/Toast.svelte';
-	import { initDatabase, pingRust } from '$lib/api/tauri';
+	import { getAccountsFromTauri, getEmailsFromTauri, initDatabase, pingRust } from '$lib/api/tauri';
 	import {
 		downloadBackupJson,
 		exportBackupJson,
@@ -228,6 +228,30 @@
 		}
 	}
 
+	async function handleTestSqliteGetEmails() {
+		try {
+			const result = await getEmailsFromTauri();
+			console.log(result);
+			toastStore.success(JSON.stringify(result));
+		} catch (error) {
+			toastStore.error(
+				getErrorMessage(error, 'Gagal get emails SQLite. Jalankan lewat Tauri dev.')
+			);
+		}
+	}
+
+	async function handleTestSqliteGetAccounts() {
+		try {
+			const result = await getAccountsFromTauri();
+			console.log(result);
+			toastStore.success(JSON.stringify(result));
+		} catch (error) {
+			toastStore.error(
+				getErrorMessage(error, 'Gagal get accounts SQLite. Jalankan lewat Tauri dev.')
+			);
+		}
+	}
+
 	function getErrorMessage(error: unknown, fallback: string) {
 		return error instanceof Error ? error.message : fallback;
 	}
@@ -278,6 +302,8 @@
 		onClearLocalData={handleClearLocalData}
 		onPingRust={handlePingRust}
 		onInitDatabase={handleInitDatabase}
+		onTestSqliteGetEmails={handleTestSqliteGetEmails}
+		onTestSqliteGetAccounts={handleTestSqliteGetAccounts}
 	/>
 
 	<Toast />

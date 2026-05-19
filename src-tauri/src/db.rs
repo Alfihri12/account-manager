@@ -1,18 +1,25 @@
 use std::path::PathBuf;
 
-use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
+use sqlx::{
+    sqlite::{SqliteConnectOptions, SqlitePoolOptions},
+    SqlitePool,
+};
 use tauri::{AppHandle, Manager};
 
 const DATABASE_FILE: &str = "account-manager.sqlite";
 
-pub async fn init_database(app: &AppHandle) -> Result<PathBuf, String> {
+fn database_path(app: &AppHandle) -> Result<PathBuf, String> {
     let app_data_dir = app
         .path()
         .app_data_dir()
         .map_err(|error| error.to_string())?;
     std::fs::create_dir_all(&app_data_dir).map_err(|error| error.to_string())?;
 
-    let database_path = app_data_dir.join(DATABASE_FILE);
+    Ok(app_data_dir.join(DATABASE_FILE))
+}
+
+pub async fn connect_database(app: &AppHandle) -> Result<SqlitePool, String> {
+    let database_path = database_path(app)?;
     let options = SqliteConnectOptions::new()
         .filename(&database_path)
         .create_if_missing(true);
@@ -27,6 +34,13 @@ pub async fn init_database(app: &AppHandle) -> Result<PathBuf, String> {
         .execute(&pool)
         .await
         .map_err(|error| error.to_string())?;
+
+    Ok(pool)
+}
+
+pub async fn init_database(app: &AppHandle) -> Result<PathBuf, String> {
+    let database_path = database_path(app)?;
+    let pool = connect_database(app).await?;
 
     sqlx::query(
         r#"
@@ -76,4 +90,9 @@ pub async fn init_database(app: &AppHandle) -> Result<PathBuf, String> {
     .map_err(|error| error.to_string())?;
 
     Ok(database_path)
+}
+
+pub async fn initialized_pool(app: &AppHandle) -> Result<SqlitePool, String> {
+    init_database(app).await?;
+    connect_database(app).await
 }

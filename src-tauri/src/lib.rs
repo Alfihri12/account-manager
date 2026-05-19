@@ -22,6 +22,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             ping,
+            commands::account::get_accounts,
+            commands::email::get_emails,
             commands::health::init_database
         ])
         .run(tauri::generate_context!())
