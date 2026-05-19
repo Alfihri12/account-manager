@@ -7,13 +7,16 @@
 	import EmailForm from '$lib/components/email/EmailForm.svelte';
 	import EmailList from '$lib/components/email/EmailList.svelte';
 	import EmailSummary from '$lib/components/email/EmailSummary.svelte';
+	import ConfirmDialog from '$lib/components/ui/ConfirmDialog.svelte';
 	import Modal from '$lib/components/ui/Modal.svelte';
 	import Toolbar from '$lib/components/ui/Toolbar.svelte';
-	import type { AccountFormData } from '$lib/services/account-service';
-	import type { EmailFormData } from '$lib/services/email-service';
-	import type { AccountItem, EmailItem } from '$lib/types/account';
+	import type { AccountFormData, AccountItem, EmailFormData, EmailItem } from '$lib/types/account';
 
 	type DialogMode = 'create-account' | 'edit-account' | 'create-email' | 'edit-email' | null;
+	type DeleteTarget =
+		| { type: 'account'; id: number; label: string }
+		| { type: 'email'; id: number; label: string }
+		| null;
 
 	type Props = {
 		selectedMenu: string;
@@ -24,17 +27,19 @@
 		activeTwoFactor: number;
 		needAudit: number;
 		safeEmails: number;
-		account: AccountItem;
+		account?: AccountItem;
 		email?: EmailItem;
 		search: string;
 		selectedCategory: string;
 		selectedEmail: string;
 		selectedAccountId: number;
 		onExport: () => void;
-		onCreateAccount: (data: AccountFormData) => void;
-		onUpdateAccount: (id: number, data: AccountFormData) => void;
-		onCreateEmail: (data: EmailFormData) => void;
-		onUpdateEmail: (id: number, data: EmailFormData) => void;
+		onCreateAccount: (data: AccountFormData) => void | Promise<void>;
+		onUpdateAccount: (id: number, data: AccountFormData) => void | Promise<void>;
+		onDeleteAccount: (id: number) => void | Promise<void>;
+		onCreateEmail: (data: EmailFormData) => void | Promise<void>;
+		onUpdateEmail: (id: number, data: EmailFormData) => void | Promise<void>;
+		onDeleteEmail: (id: number) => void | Promise<void>;
 	};
 
 	let {
@@ -55,12 +60,15 @@
 		onExport,
 		onCreateAccount,
 		onUpdateAccount,
+		onDeleteAccount,
 		onCreateEmail,
-		onUpdateEmail
+		onUpdateEmail,
+		onDeleteEmail
 	}: Props = $props();
 
 	let dialogMode = $state<DialogMode>(null);
 	let editingEmailId = $state<number | null>(null);
+	let deleteTarget = $state<DeleteTarget>(null);
 
 	const pageTitle = $derived.by(() => {
 		if (selectedMenu === 'emails') return 'Email Induk';
@@ -96,6 +104,21 @@
 
 	const editingEmail = $derived(emails.find((item) => item.id === editingEmailId));
 
+	const deleteMessage = $derived.by(() => {
+		if (!deleteTarget) return '';
+		if (deleteTarget.type === 'email') {
+			return `Hapus email "${deleteTarget.label}"? Akun yang terhubung tidak ikut dihapus, tapi relasi emailnya akan menjadi tidak jelas.`;
+		}
+
+		return `Hapus akun "${deleteTarget.label}"? Data ini akan hilang dari state lokal.`;
+	});
+
+	$effect(() => {
+		if (selectedMenu === 'emails' && selectedEmail === 'all' && emails[0]) {
+			selectedEmail = String(emails[0].id);
+		}
+	});
+
 	function closeDialog() {
 		dialogMode = null;
 		editingEmailId = null;
@@ -106,6 +129,8 @@
 	}
 
 	function openEditAccount() {
+		if (!account) return;
+
 		dialogMode = 'edit-account';
 	}
 
@@ -118,24 +143,50 @@
 		dialogMode = 'edit-email';
 	}
 
-	function handleAccountSubmit(data: AccountFormData) {
-		if (dialogMode === 'edit-account') {
-			onUpdateAccount(account.id, data);
+	async function handleAccountSubmit(data: AccountFormData) {
+		if (dialogMode === 'edit-account' && account) {
+			await onUpdateAccount(account.id, data);
 		} else {
-			onCreateAccount(data);
+			await onCreateAccount(data);
 		}
 
 		closeDialog();
 	}
 
-	function handleEmailSubmit(data: EmailFormData) {
+	async function handleEmailSubmit(data: EmailFormData) {
 		if (dialogMode === 'edit-email' && editingEmailId !== null) {
-			onUpdateEmail(editingEmailId, data);
+			await onUpdateEmail(editingEmailId, data);
 		} else {
-			onCreateEmail(data);
+			await onCreateEmail(data);
 		}
 
 		closeDialog();
+	}
+
+	function requestDeleteAccount() {
+		if (!account) return;
+
+		deleteTarget = { type: 'account', id: account.id, label: account.name };
+	}
+
+	function requestDeleteEmail(email: EmailItem) {
+		deleteTarget = { type: 'email', id: email.id, label: email.label };
+	}
+
+	function closeConfirmDialog() {
+		deleteTarget = null;
+	}
+
+	async function confirmDelete() {
+		if (!deleteTarget) return;
+
+		if (deleteTarget.type === 'account') {
+			await onDeleteAccount(deleteTarget.id);
+		} else {
+			await onDeleteEmail(deleteTarget.id);
+		}
+
+		closeConfirmDialog();
 	}
 </script>
 
@@ -156,8 +207,14 @@
 
 		{#if selectedMenu === 'emails'}
 			<section class="email-page">
-				<EmailList {emails} bind:selectedEmail onCreate={openCreateEmail} onEdit={openEditEmail} />
-				<EmailSummary {emails} />
+				<EmailList
+					{emails}
+					bind:selectedEmail
+					onCreate={openCreateEmail}
+					onEdit={openEditEmail}
+					onDelete={requestDeleteEmail}
+				/>
+				<EmailSummary {emails} {accounts} {selectedEmail} />
 			</section>
 		{:else}
 			<section class="workspace">
@@ -168,14 +225,21 @@
 						bind:selectedEmail
 						onCreate={openCreateEmail}
 						onEdit={openEditEmail}
+						onDelete={requestDeleteEmail}
 					/>
 				{/if}
 			</section>
 		{/if}
 	</main>
 
-	{#if selectedMenu !== 'emails'}
-		<DetailPanel {account} {email} {onExport} onEdit={openEditAccount} />
+	{#if selectedMenu !== 'emails' && account}
+		<DetailPanel
+			{account}
+			{email}
+			{onExport}
+			onEdit={openEditAccount}
+			onDelete={requestDeleteAccount}
+		/>
 	{/if}
 
 	<Modal open={dialogMode !== null} title={dialogTitle} onClose={closeDialog}>
@@ -195,4 +259,12 @@
 			/>
 		{/if}
 	</Modal>
+
+	<ConfirmDialog
+		open={deleteTarget !== null}
+		title="Konfirmasi Hapus"
+		message={deleteMessage}
+		onCancel={closeConfirmDialog}
+		onConfirm={confirmDelete}
+	/>
 </section>

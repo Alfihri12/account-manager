@@ -43,17 +43,24 @@ app-shell
     └── DetailPanel
 ```
 
-Data awal diambil dari `src/lib/data/mock.ts` melalui service:
+Data awal diambil dari `src/lib/data/mock.ts` melalui store:
 
 ```txt
-mock data → service → local state di +page.svelte → komponen UI
+mock data → repository/localStorage → store pusat → +page.svelte → komponen UI
 ```
 
-Service yang tersedia:
+Repository menjadi boundary data access. Untuk sekarang repository menyimpan data ke `localStorage`. Saat Tauri + SQLite sudah siap, isi repository bisa diganti ke wrapper `invoke()` tanpa menyebarkan logic backend ke komponen.
 
-- `account-service.ts`: mengambil, membuat, mengubah, menghapus, dan memfilter akun berdasarkan email.
-- `email-service.ts`: mengambil, membuat, mengubah, menghapus, dan menghitung jumlah akun per email.
-- `export-service.ts`: mengubah data akun menjadi Markdown.
+Store yang tersedia:
+
+- `account-store.svelte.ts`: mengambil, membuat, mengubah, menghapus, dan memfilter akun berdasarkan email.
+- `email-store.svelte.ts`: mengambil, membuat, mengubah, menghapus, dan menghitung jumlah akun per email.
+- `ui-store.svelte.ts`: menyimpan state UI seperti menu aktif, search, filter, dan item terpilih.
+- `toast-store.svelte.ts`: menyimpan notifikasi sementara untuk feedback user.
+
+Service yang masih ada:
+
+- `export-markdown.ts`: mengubah data akun menjadi Markdown.
 
 Komponen child yang perlu mengubah state memakai bindable props Svelte 5, contohnya:
 
@@ -74,7 +81,10 @@ Komponen child yang perlu mengubah state memakai bindable props Svelte 5, contoh
 | `src/lib/components/email/`      | List email dan card email.                            |
 | `src/lib/components/ui/`         | Komponen UI kecil yang reusable.                      |
 | `src/lib/data/`                  | Sumber data sementara.                                |
-| `src/lib/services/`              | Operasi data lokal sebelum nanti diganti backend/API. |
+| `src/lib/repositories/`          | Boundary data access sebelum Tauri/SQLite.            |
+| `src/lib/storage/`               | Helper persistence sementara.                         |
+| `src/lib/stores/`                | Sumber state pusat untuk data dan UI.                 |
+| `src/lib/services/`              | Service non-state seperti export Markdown.            |
 | `src/lib/types/`                 | TypeScript type untuk domain akun.                    |
 | `src/lib/utils/`                 | Helper domain akun.                                   |
 

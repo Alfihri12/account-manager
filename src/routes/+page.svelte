@@ -1,36 +1,28 @@
 <script lang="ts">
 	import DashboardContent from '$lib/components/layout/DashboardContent.svelte';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
-	import {
-		createAccount,
-		getAccounts,
-		updateAccount,
-		type AccountFormData
-	} from '$lib/services/account-service';
-	import {
-		createEmail,
-		getEmails,
-		updateEmail,
-		withAccountCounts
-	} from '$lib/services/email-service';
-	import { accountToMarkdown } from '$lib/services/export-service';
-	import type { EmailFormData } from '$lib/services/email-service';
+	import Toast from '$lib/components/ui/Toast.svelte';
+	import { accountToMarkdown } from '$lib/services/export-markdown';
+	import { useAccountStore } from '$lib/stores/account-store.svelte';
+	import { useEmailStore } from '$lib/stores/email-store.svelte';
+	import { useToastStore } from '$lib/stores/toast-store.svelte';
+	import { useUiStore } from '$lib/stores/ui-store.svelte';
+	import type { AccountFormData, EmailFormData } from '$lib/types/account';
 
-	let selectedMenu = $state('dashboard');
-	let search = $state('');
-	let selectedCategory = $state('all');
-	let selectedEmail = $state('all');
-	let selectedAccountId = $state(1);
-	let accounts = $state(getAccounts());
-	let storedEmails = $state(getEmails());
-	const emails = $derived(withAccountCounts(storedEmails, accounts));
+	const accountStore = useAccountStore();
+	const emailStore = useEmailStore();
+	const toastStore = useToastStore();
+	const uiStore = useUiStore();
+
+	const accounts = $derived(accountStore.accounts);
+	const emails = $derived(emailStore.emails);
 
 	const selectedAccount = $derived(
-		accounts.find((account) => account.id === selectedAccountId) ?? accounts[0]
+		accounts.find((account) => account.id === uiStore.selectedAccountId) ?? accounts[0]
 	);
 
 	const selectedEmailItem = $derived(
-		emails.find((email) => email.id === selectedAccount.linkedEmailId)
+		selectedAccount ? emails.find((email) => email.id === selectedAccount.linkedEmailId) : undefined
 	);
 
 	const filteredAccounts = $derived.by(() =>
@@ -39,12 +31,16 @@
 			const keyword =
 				`${account.name} ${account.platform} ${account.username} ${email?.label ?? ''}`.toLowerCase();
 			const menuCategory =
-				selectedMenu === 'games' ? 'game' : selectedMenu === 'sosmed' ? 'sosmed' : selectedCategory;
+				uiStore.selectedMenu === 'games'
+					? 'game'
+					: uiStore.selectedMenu === 'sosmed'
+						? 'sosmed'
+						: uiStore.selectedCategory;
 
 			return (
-				keyword.includes(search.toLowerCase()) &&
+				keyword.includes(uiStore.search.toLowerCase()) &&
 				(menuCategory === 'all' || account.category === menuCategory) &&
-				(selectedEmail === 'all' || account.linkedEmailId === Number(selectedEmail))
+				(uiStore.selectedEmail === 'all' || account.linkedEmailId === Number(uiStore.selectedEmail))
 			);
 		})
 	);
@@ -60,41 +56,95 @@
 	const socialCount = $derived(accounts.filter((account) => account.category === 'sosmed').length);
 
 	$effect(() => {
-		if (selectedMenu === 'emails' || filteredAccounts.length === 0) {
+		if (uiStore.selectedMenu === 'emails' || filteredAccounts.length === 0) {
 			return;
 		}
 
 		const selectedAccountIsVisible = filteredAccounts.some(
-			(account) => account.id === selectedAccountId
+			(account) => account.id === uiStore.selectedAccountId
 		);
 
 		if (!selectedAccountIsVisible) {
-			selectedAccountId = filteredAccounts[0].id;
+			uiStore.selectedAccountId = filteredAccounts[0].id;
 		}
 	});
 
 	function exportMarkdown() {
+		if (!selectedAccount) {
+			toastStore.error('Akun tidak ditemukan.');
+			return;
+		}
+
 		console.log(accountToMarkdown(selectedAccount, selectedEmailItem));
+		toastStore.success('Markdown akun berhasil dibuat di console.');
 	}
 
-	function handleCreateAccount(data: AccountFormData) {
-		accounts = createAccount(accounts, data);
-		selectedAccountId = accounts.at(-1)?.id ?? selectedAccountId;
+	async function handleCreateAccount(data: AccountFormData) {
+		try {
+			const account = await accountStore.createAccount(data);
+			uiStore.selectedAccountId = account.id;
+			toastStore.success('Akun berhasil ditambahkan.');
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal menambahkan akun.'));
+		}
 	}
 
-	function handleUpdateAccount(id: number, data: AccountFormData) {
-		accounts = updateAccount(accounts, id, data);
-		selectedAccountId = id;
+	async function handleUpdateAccount(id: number, data: AccountFormData) {
+		try {
+			await accountStore.updateAccount(id, data);
+			uiStore.selectedAccountId = id;
+			toastStore.success('Akun berhasil diperbarui.');
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal memperbarui akun.'));
+		}
 	}
 
-	function handleCreateEmail(data: EmailFormData) {
-		storedEmails = createEmail(storedEmails, data);
-		selectedEmail = String(storedEmails.at(-1)?.id ?? 'all');
+	async function handleDeleteAccount(id: number) {
+		try {
+			await accountStore.deleteAccount(id);
+			uiStore.selectedAccountId = accountStore.accounts[0]?.id ?? 0;
+			toastStore.success('Akun berhasil dihapus.');
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal menghapus akun.'));
+		}
 	}
 
-	function handleUpdateEmail(id: number, data: EmailFormData) {
-		storedEmails = updateEmail(storedEmails, id, data);
-		selectedEmail = String(id);
+	async function handleCreateEmail(data: EmailFormData) {
+		try {
+			const email = await emailStore.createEmail(data);
+			uiStore.selectedEmail = String(email.id);
+			toastStore.success('Email berhasil ditambahkan.');
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal menambahkan email.'));
+		}
+	}
+
+	async function handleUpdateEmail(id: number, data: EmailFormData) {
+		try {
+			await emailStore.updateEmail(id, data);
+			uiStore.selectedEmail = String(id);
+			toastStore.success('Email berhasil diperbarui.');
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal memperbarui email.'));
+		}
+	}
+
+	async function handleDeleteEmail(id: number) {
+		try {
+			await emailStore.deleteEmail(id);
+
+			if (uiStore.selectedEmail === String(id)) {
+				uiStore.selectedEmail = emailStore.emails[0] ? String(emailStore.emails[0].id) : 'all';
+			}
+
+			toastStore.success('Email berhasil dihapus.');
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal menghapus email.'));
+		}
+	}
+
+	function getErrorMessage(error: unknown, fallback: string) {
+		return error instanceof Error ? error.message : fallback;
 	}
 </script>
 
@@ -104,7 +154,7 @@
 
 <div class="app-shell">
 	<Sidebar
-		bind:selectedMenu
+		bind:selectedMenu={uiStore.selectedMenu}
 		{totalAccounts}
 		{totalEmails}
 		{gameCount}
@@ -113,7 +163,7 @@
 	/>
 
 	<DashboardContent
-		{selectedMenu}
+		selectedMenu={uiStore.selectedMenu}
 		{emails}
 		accounts={filteredAccounts}
 		{totalEmails}
@@ -123,14 +173,18 @@
 		{safeEmails}
 		account={selectedAccount}
 		email={selectedEmailItem}
-		bind:search
-		bind:selectedCategory
-		bind:selectedEmail
-		bind:selectedAccountId
+		bind:search={uiStore.search}
+		bind:selectedCategory={uiStore.selectedCategory}
+		bind:selectedEmail={uiStore.selectedEmail}
+		bind:selectedAccountId={uiStore.selectedAccountId}
 		onExport={exportMarkdown}
 		onCreateAccount={handleCreateAccount}
 		onUpdateAccount={handleUpdateAccount}
+		onDeleteAccount={handleDeleteAccount}
 		onCreateEmail={handleCreateEmail}
 		onUpdateEmail={handleUpdateEmail}
+		onDeleteEmail={handleDeleteEmail}
 	/>
+
+	<Toast />
 </div>

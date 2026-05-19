@@ -7,9 +7,10 @@
 		selected: boolean;
 		onSelect: () => void;
 		onEdit: () => void;
+		onDelete: () => void;
 	};
 
-	let { email, selected, onSelect, onEdit }: Props = $props();
+	let { email, selected, onSelect, onEdit, onDelete }: Props = $props();
 </script>
 
 <article class="email-card" class:selected>
@@ -26,5 +27,6 @@
 			label={email.status === 'safe' ? 'aman' : 'audit'}
 		/>
 		<button class="mini-button" onclick={onEdit}>Edit</button>
+		<button class="mini-button danger" onclick={onDelete}>Hapus</button>
 	</div>
 </article>

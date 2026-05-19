@@ -12,6 +12,8 @@ export type EmailItem = {
 	accountCount: number;
 	recovery: string;
 	status: 'safe' | 'audit';
+	createdAt: string;
+	updatedAt: string;
 };
 
 export type AccountItem = {
@@ -28,4 +30,18 @@ export type AccountItem = {
 	status: Status;
 	tags: string[];
 	notes: string;
+	createdAt: string;
+	updatedAt: string;
 };
+
+export type CreateEmailInput = Omit<EmailItem, 'id' | 'accountCount' | 'createdAt' | 'updatedAt'>;
+
+export type UpdateEmailInput = Partial<CreateEmailInput>;
+
+export type CreateAccountInput = Omit<AccountItem, 'id' | 'createdAt' | 'updatedAt'>;
+
+export type UpdateAccountInput = Partial<CreateAccountInput>;
+
+export type AccountFormData = CreateAccountInput;
+
+export type EmailFormData = CreateEmailInput;

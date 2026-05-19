@@ -112,6 +112,10 @@ Filter akun berdasarkan keyword, kategori, dan email induk. Props `search`, `sel
 
 Modal reusable untuk form tambah/edit.
 
+### `ui/ConfirmDialog.svelte`
+
+Dialog konfirmasi untuk aksi destruktif seperti hapus akun dan hapus email.
+
 ### `ui/StatusBadge.svelte`
 
 Badge reusable untuk status sederhana.

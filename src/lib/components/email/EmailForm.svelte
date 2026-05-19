@@ -1,13 +1,12 @@
 <script lang="ts">
-	import type { EmailFormData } from '$lib/services/email-service';
-	import type { EmailItem } from '$lib/types/account';
+	import type { EmailFormData, EmailItem } from '$lib/types/account';
 	import { untrack } from 'svelte';
 
 	type Errors = Partial<Record<keyof EmailFormData, string>>;
 
 	type Props = {
 		email?: EmailItem;
-		onSubmit: (data: EmailFormData) => void;
+		onSubmit: (data: EmailFormData) => void | Promise<void>;
 		onCancel: () => void;
 	};
 
@@ -44,14 +43,14 @@
 		return Object.keys(nextErrors).length === 0;
 	}
 
-	function handleSubmit(event: SubmitEvent) {
+	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
 		if (!validate()) {
 			return;
 		}
 
-		onSubmit({
+		await onSubmit({
 			label,
 			address,
 			provider,

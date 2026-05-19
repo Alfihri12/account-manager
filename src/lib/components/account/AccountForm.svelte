@@ -1,6 +1,11 @@
 <script lang="ts">
-	import type { AccountFormData } from '$lib/services/account-service';
-	import type { AccountItem, Category, EmailItem, Status } from '$lib/types/account';
+	import type {
+		AccountFormData,
+		AccountItem,
+		Category,
+		EmailItem,
+		Status
+	} from '$lib/types/account';
 	import { untrack } from 'svelte';
 
 	type Errors = Partial<Record<keyof AccountFormData, string>>;
@@ -9,7 +14,7 @@
 		account?: AccountItem;
 		emails: EmailItem[];
 		defaultCategory?: Category;
-		onSubmit: (data: AccountFormData) => void;
+		onSubmit: (data: AccountFormData) => void | Promise<void>;
 		onCancel: () => void;
 	};
 
@@ -58,14 +63,14 @@
 		return Object.keys(nextErrors).length === 0;
 	}
 
-	function handleSubmit(event: SubmitEvent) {
+	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
 		if (!validate()) {
 			return;
 		}
 
-		onSubmit({
+		await onSubmit({
 			name,
 			category,
 			platform,

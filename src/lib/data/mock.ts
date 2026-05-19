@@ -1,5 +1,7 @@
 import type { AccountItem, EmailItem } from '$lib/types/account';
 
+const mockTimestamp = '2026-05-19T00:00:00.000Z';
+
 export const emails: EmailItem[] = [
 	{
 		id: 1,
@@ -10,7 +12,9 @@ export const emails: EmailItem[] = [
 		twoFactor: true,
 		accountCount: 6,
 		recovery: 'Gmail Utama',
-		status: 'safe'
+		status: 'safe',
+		createdAt: mockTimestamp,
+		updatedAt: mockTimestamp
 	},
 	{
 		id: 2,
@@ -21,7 +25,9 @@ export const emails: EmailItem[] = [
 		twoFactor: true,
 		accountCount: 4,
 		recovery: 'Gmail Utama',
-		status: 'safe'
+		status: 'safe',
+		createdAt: mockTimestamp,
+		updatedAt: mockTimestamp
 	},
 	{
 		id: 3,
@@ -32,7 +38,9 @@ export const emails: EmailItem[] = [
 		twoFactor: false,
 		accountCount: 2,
 		recovery: 'Belum jelas',
-		status: 'audit'
+		status: 'audit',
+		createdAt: mockTimestamp,
+		updatedAt: mockTimestamp
 	}
 ];
 
@@ -50,7 +58,9 @@ export const accounts: AccountItem[] = [
 		twoFactor: true,
 		status: 'active',
 		tags: ['gaming', 'utama', 'pc'],
-		notes: 'Akun utama untuk game PC. Password asli jangan disimpan di aplikasi ini.'
+		notes: 'Akun utama untuk game PC. Password asli jangan disimpan di aplikasi ini.',
+		createdAt: mockTimestamp,
+		updatedAt: mockTimestamp
 	},
 	{
 		id: 2,
@@ -64,7 +74,9 @@ export const accounts: AccountItem[] = [
 		twoFactor: true,
 		status: 'need_check',
 		tags: ['gaming', 'chat'],
-		notes: 'Cek recovery email dan nomor HP. Jangan males, ini akun sering kepakai.'
+		notes: 'Cek recovery email dan nomor HP. Jangan males, ini akun sering kepakai.',
+		createdAt: mockTimestamp,
+		updatedAt: mockTimestamp
 	},
 	{
 		id: 3,
@@ -78,7 +90,9 @@ export const accounts: AccountItem[] = [
 		twoFactor: true,
 		status: 'active',
 		tags: ['dev', 'utama'],
-		notes: 'Akun development utama. Wajib 2FA aktif.'
+		notes: 'Akun development utama. Wajib 2FA aktif.',
+		createdAt: mockTimestamp,
+		updatedAt: mockTimestamp
 	},
 	{
 		id: 4,
@@ -92,6 +106,8 @@ export const accounts: AccountItem[] = [
 		twoFactor: false,
 		status: 'need_check',
 		tags: ['game', 'audit'],
-		notes: 'Belum jelas status 2FA. Ini perlu dicek, jangan sok lupa.'
+		notes: 'Belum jelas status 2FA. Ini perlu dicek, jangan sok lupa.',
+		createdAt: mockTimestamp,
+		updatedAt: mockTimestamp
 	}
 ];

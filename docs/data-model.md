@@ -31,6 +31,8 @@ export type EmailItem = {
 	accountCount: number;
 	recovery: string;
 	status: 'safe' | 'audit';
+	createdAt: string;
+	updatedAt: string;
 };
 ```
 
@@ -45,6 +47,8 @@ Catatan field:
 - `accountCount`: jumlah akun yang terhubung.
 - `recovery`: informasi recovery secara umum.
 - `status`: status keamanan email.
+- `createdAt`: waktu data dibuat dalam format ISO string.
+- `updatedAt`: waktu data terakhir diperbarui dalam format ISO string.
 
 ## AccountItem
 
@@ -63,6 +67,8 @@ export type AccountItem = {
 	status: Status;
 	tags: string[];
 	notes: string;
+	createdAt: string;
+	updatedAt: string;
 };
 ```
 
@@ -81,6 +87,22 @@ Catatan field:
 - `status`: status kondisi akun.
 - `tags`: tag untuk pengelompokan ringan.
 - `notes`: catatan audit atau konteks tambahan.
+- `createdAt`: waktu data dibuat dalam format ISO string.
+- `updatedAt`: waktu data terakhir diperbarui dalam format ISO string.
+
+## Input Types
+
+Data dari form dan data tersimpan dipisahkan:
+
+```ts
+export type CreateEmailInput = Omit<EmailItem, 'id' | 'accountCount' | 'createdAt' | 'updatedAt'>;
+export type UpdateEmailInput = Partial<CreateEmailInput>;
+
+export type CreateAccountInput = Omit<AccountItem, 'id' | 'createdAt' | 'updatedAt'>;
+export type UpdateAccountInput = Partial<CreateAccountInput>;
+```
+
+`Create*Input` dipakai saat menambah data baru. `Update*Input` dipakai saat mengubah data lama. Repository yang bertanggung jawab menambahkan `id`, `createdAt`, dan `updatedAt`.
 
 ## Data Mock
 

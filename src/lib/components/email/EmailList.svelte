@@ -7,9 +7,10 @@
 		selectedEmail: string;
 		onCreate: () => void;
 		onEdit: (email: EmailItem) => void;
+		onDelete: (email: EmailItem) => void;
 	};
 
-	let { emails, selectedEmail = $bindable(), onCreate, onEdit }: Props = $props();
+	let { emails, selectedEmail = $bindable(), onCreate, onEdit, onDelete }: Props = $props();
 </script>
 
 <div class="panel email-panel">
@@ -28,6 +29,7 @@
 				selected={selectedEmail === String(email.id)}
 				onSelect={() => (selectedEmail = String(email.id))}
 				onEdit={() => onEdit(email)}
+				onDelete={() => onDelete(email)}
 			/>
 		{/each}
 	</div>
