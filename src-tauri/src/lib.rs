@@ -1,3 +1,7 @@
+mod commands;
+mod db;
+mod models;
+
 #[tauri::command]
 fn ping() -> String {
     "pong dari Rust".to_string()
@@ -16,7 +20,10 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![ping])
+        .invoke_handler(tauri::generate_handler![
+            ping,
+            commands::health::init_database
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

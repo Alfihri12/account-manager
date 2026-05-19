@@ -1,9 +1,17 @@
 # Package Managers
+node_modules
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
 bun.lock
 bun.lockb
+
+# Build outputs
+.svelte-kit/
+build/
+dist/
+src-tauri/target/
+src-tauri/gen/
 
 # Miscellaneous
 /static/

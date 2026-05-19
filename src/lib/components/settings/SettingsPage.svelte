@@ -9,6 +9,7 @@
 		onResetSample: () => void | Promise<void>;
 		onClearLocalData: () => void | Promise<void>;
 		onPingRust: () => void | Promise<void>;
+		onInitDatabase: () => void | Promise<void>;
 	};
 
 	let {
@@ -20,7 +21,8 @@
 		onImportBackup,
 		onResetSample,
 		onClearLocalData,
-		onPingRust
+		onPingRust,
+		onInitDatabase
 	}: Props = $props();
 
 	let fileInput = $state<HTMLInputElement>();
@@ -103,11 +105,14 @@
 	<section class="settings-section">
 		<div>
 			<h3>Tauri Bridge</h3>
-			<p>Tes koneksi frontend ke Rust sebelum masuk SQLite.</p>
+			<p>Tes koneksi frontend ke Rust dan inisialisasi SQLite awal.</p>
 		</div>
 
 		<div class="settings-actions">
 			<button class="secondary" disabled={loading} onclick={onPingRust}>Test Rust ping</button>
+			<button class="secondary" disabled={loading} onclick={onInitDatabase}
+				>Test database init</button
+			>
 		</div>
 	</section>
 </section>
