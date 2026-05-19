@@ -28,6 +28,11 @@ button {
 	cursor: pointer;
 }
 
+button:disabled {
+	cursor: not-allowed;
+	opacity: 0.58;
+}
+
 .app-shell {
 	display: grid;
 	grid-template-columns: 280px minmax(0, 1fr);
@@ -512,6 +517,79 @@ dd {
 	line-height: 1.6;
 }
 
+.settings-page {
+	display: grid;
+	gap: 16px;
+}
+
+.settings-section {
+	display: grid;
+	grid-template-columns: minmax(220px, 0.55fr) minmax(0, 1fr);
+	gap: 18px;
+	border: 1px solid rgba(148, 163, 184, 0.18);
+	border-radius: 8px;
+	background: rgba(30, 41, 59, 0.54);
+	padding: 18px;
+}
+
+.settings-section h3,
+.settings-section p {
+	margin: 0;
+}
+
+.settings-section p {
+	color: #94a3b8;
+	margin-top: 6px;
+	line-height: 1.55;
+}
+
+.settings-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+.settings-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.settings-grid label {
+	display: grid;
+	gap: 6px;
+	color: #cbd5e1;
+	font-size: 0.9rem;
+	font-weight: 700;
+}
+
+.settings-grid input {
+	border: 1px solid rgba(148, 163, 184, 0.22);
+	border-radius: 8px;
+	background: rgba(15, 23, 42, 0.8);
+	color: inherit;
+	padding: 10px 11px;
+}
+
+.error-banner {
+	border: 1px solid rgba(248, 113, 113, 0.35);
+	border-radius: 8px;
+	background: rgba(239, 68, 68, 0.12);
+	color: #fecaca;
+	padding: 12px 14px;
+}
+
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	clip-path: inset(50%);
+}
+
 .modal-backdrop {
 	position: fixed;
 	inset: 0;
@@ -675,6 +753,8 @@ dd {
 	.email-page,
 	.email-summary,
 	.relation-stats,
+	.settings-section,
+	.settings-grid,
 	.workspace,
 	.stats-grid,
 	.toolbar {

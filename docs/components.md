@@ -34,6 +34,8 @@ Pembungkus konten dashboard. Komponen ini menjaga `+page.svelte` tetap tipis den
 
 Komponen ini juga menentukan view berdasarkan `selectedMenu`. Dashboard menampilkan statistik, toolbar, daftar akun, daftar email, dan detail akun. Email Induk menampilkan daftar email dan ringkasan email. Akun Game dan Sosmed menampilkan daftar akun yang sudah difilter kategori.
 
+Settings menampilkan backup/restore JSON, reset sample data, clear local data, dan placeholder konfigurasi Obsidian/security.
+
 ## Navigation
 
 ### `navigation/Brand.svelte`
@@ -116,6 +118,10 @@ Modal reusable untuk form tambah/edit.
 
 Dialog konfirmasi untuk aksi destruktif seperti hapus akun dan hapus email.
 
+### `ui/Toast.svelte`
+
+Toast notification untuk feedback aksi create, update, delete, import, export, dan error.
+
 ### `ui/StatusBadge.svelte`
 
 Badge reusable untuk status sederhana.
@@ -124,6 +130,19 @@ Variant yang tersedia:
 
 - `good`
 - `warn`
+
+## Settings
+
+### `settings/SettingsPage.svelte`
+
+Halaman settings untuk operasi data lokal:
+
+- export semua data ke JSON;
+- import data dari JSON;
+- reset ke sample data;
+- hapus semua data lokal;
+- placeholder konfigurasi Obsidian;
+- catatan security.
 
 ## Aturan Penambahan Komponen
 

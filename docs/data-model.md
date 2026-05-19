@@ -104,6 +104,21 @@ export type UpdateAccountInput = Partial<CreateAccountInput>;
 
 `Create*Input` dipakai saat menambah data baru. `Update*Input` dipakai saat mengubah data lama. Repository yang bertanggung jawab menambahkan `id`, `createdAt`, dan `updatedAt`.
 
+## Backup JSON
+
+Backup memakai format:
+
+```ts
+type BackupData = {
+	version: 1;
+	exportedAt: string;
+	emails: EmailItem[];
+	accounts: AccountItem[];
+};
+```
+
+Service backup ada di `src/lib/services/backup-service.ts`. File ini dipakai Settings untuk export dan import data sebelum app pindah ke SQLite.
+
 ## Data Mock
 
 Data sementara ada di:

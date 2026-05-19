@@ -2,6 +2,11 @@
 	import DashboardContent from '$lib/components/layout/DashboardContent.svelte';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import Toast from '$lib/components/ui/Toast.svelte';
+	import {
+		downloadBackupJson,
+		exportBackupJson,
+		importBackupJson
+	} from '$lib/services/backup-service';
 	import { accountToMarkdown } from '$lib/services/export-markdown';
 	import { useAccountStore } from '$lib/stores/account-store.svelte';
 	import { useEmailStore } from '$lib/stores/email-store.svelte';
@@ -54,6 +59,18 @@
 	const safeEmails = $derived(emails.filter((email) => email.status === 'safe').length);
 	const gameCount = $derived(accounts.filter((account) => account.category === 'game').length);
 	const socialCount = $derived(accounts.filter((account) => account.category === 'sosmed').length);
+	const loading = $derived(accountStore.loading || emailStore.loading);
+	const error = $derived(accountStore.error ?? emailStore.error);
+
+	$effect(() => {
+		if (!accountStore.initialized && !accountStore.loading) {
+			void accountStore.loadAccounts();
+		}
+
+		if (!emailStore.initialized && !emailStore.loading) {
+			void emailStore.loadEmails();
+		}
+	});
 
 	$effect(() => {
 		if (uiStore.selectedMenu === 'emails' || filteredAccounts.length === 0) {
@@ -143,6 +160,53 @@
 		}
 	}
 
+	function handleExportBackup() {
+		try {
+			const json = exportBackupJson(emails, accounts);
+			downloadBackupJson(json);
+			toastStore.success('Backup JSON berhasil dibuat.');
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal membuat backup JSON.'));
+		}
+	}
+
+	async function handleImportBackup(file: File) {
+		try {
+			const backup = await importBackupJson(file);
+			await emailStore.replaceEmails(backup.emails);
+			await accountStore.replaceAccounts(backup.accounts);
+			uiStore.selectedEmail = emailStore.emails[0] ? String(emailStore.emails[0].id) : 'all';
+			uiStore.selectedAccountId = accountStore.accounts[0]?.id ?? 0;
+			toastStore.success('Backup JSON berhasil dipulihkan.');
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal import backup JSON.'));
+		}
+	}
+
+	async function handleResetSample() {
+		try {
+			await emailStore.resetEmailsToDefault();
+			await accountStore.resetAccountsToDefault();
+			uiStore.selectedEmail = emailStore.emails[0] ? String(emailStore.emails[0].id) : 'all';
+			uiStore.selectedAccountId = accountStore.accounts[0]?.id ?? 0;
+			toastStore.success('Data sample berhasil dipulihkan.');
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal reset data sample.'));
+		}
+	}
+
+	async function handleClearLocalData() {
+		try {
+			await emailStore.clearEmails();
+			await accountStore.clearAccounts();
+			uiStore.selectedEmail = 'all';
+			uiStore.selectedAccountId = 0;
+			toastStore.success('Semua data lokal berhasil dihapus.');
+		} catch (error) {
+			toastStore.error(getErrorMessage(error, 'Gagal menghapus data lokal.'));
+		}
+	}
+
 	function getErrorMessage(error: unknown, fallback: string) {
 		return error instanceof Error ? error.message : fallback;
 	}
@@ -160,6 +224,7 @@
 		{gameCount}
 		{socialCount}
 		onExport={exportMarkdown}
+		onBackup={handleExportBackup}
 	/>
 
 	<DashboardContent
@@ -171,6 +236,8 @@
 		{activeTwoFactor}
 		{needAudit}
 		{safeEmails}
+		{loading}
+		{error}
 		account={selectedAccount}
 		email={selectedEmailItem}
 		bind:search={uiStore.search}
@@ -184,6 +251,10 @@
 		onCreateEmail={handleCreateEmail}
 		onUpdateEmail={handleUpdateEmail}
 		onDeleteEmail={handleDeleteEmail}
+		onExportBackup={handleExportBackup}
+		onImportBackup={handleImportBackup}
+		onResetSample={handleResetSample}
+		onClearLocalData={handleClearLocalData}
 	/>
 
 	<Toast />

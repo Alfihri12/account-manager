@@ -7,6 +7,7 @@
 	import EmailForm from '$lib/components/email/EmailForm.svelte';
 	import EmailList from '$lib/components/email/EmailList.svelte';
 	import EmailSummary from '$lib/components/email/EmailSummary.svelte';
+	import SettingsPage from '$lib/components/settings/SettingsPage.svelte';
 	import ConfirmDialog from '$lib/components/ui/ConfirmDialog.svelte';
 	import Modal from '$lib/components/ui/Modal.svelte';
 	import Toolbar from '$lib/components/ui/Toolbar.svelte';
@@ -27,6 +28,8 @@
 		activeTwoFactor: number;
 		needAudit: number;
 		safeEmails: number;
+		loading: boolean;
+		error?: string | null;
 		account?: AccountItem;
 		email?: EmailItem;
 		search: string;
@@ -40,6 +43,10 @@
 		onCreateEmail: (data: EmailFormData) => void | Promise<void>;
 		onUpdateEmail: (id: number, data: EmailFormData) => void | Promise<void>;
 		onDeleteEmail: (id: number) => void | Promise<void>;
+		onExportBackup: () => void;
+		onImportBackup: (file: File) => void | Promise<void>;
+		onResetSample: () => void | Promise<void>;
+		onClearLocalData: () => void | Promise<void>;
 	};
 
 	let {
@@ -51,6 +58,8 @@
 		activeTwoFactor,
 		needAudit,
 		safeEmails,
+		loading,
+		error,
 		account,
 		email,
 		search = $bindable(),
@@ -63,7 +72,11 @@
 		onDeleteAccount,
 		onCreateEmail,
 		onUpdateEmail,
-		onDeleteEmail
+		onDeleteEmail,
+		onExportBackup,
+		onImportBackup,
+		onResetSample,
+		onClearLocalData
 	}: Props = $props();
 
 	let dialogMode = $state<DialogMode>(null);
@@ -74,6 +87,7 @@
 		if (selectedMenu === 'emails') return 'Email Induk';
 		if (selectedMenu === 'games') return 'Akun Game';
 		if (selectedMenu === 'sosmed') return 'Sosmed';
+		if (selectedMenu === 'settings') return 'Settings';
 
 		return 'Dashboard Akun';
 	});
@@ -83,6 +97,8 @@
 		if (selectedMenu === 'games') return 'Fokus ke akun game dan status keamanan dasarnya.';
 		if (selectedMenu === 'sosmed')
 			return 'Pantau akun sosial media, login, dan email yang terhubung.';
+		if (selectedMenu === 'settings')
+			return 'Backup, restore, reset data lokal, dan persiapan export Obsidian.';
 
 		return 'Pantau email induk, akun game, sosmed, dan status keamanan dasar.';
 	});
@@ -203,9 +219,22 @@
 			<StatGrid {totalEmails} {totalAccounts} {activeTwoFactor} {needAudit} {safeEmails} />
 		{/if}
 
-		<Toolbar {emails} bind:search bind:selectedCategory bind:selectedEmail />
+		{#if selectedMenu !== 'settings'}
+			<Toolbar {emails} bind:search bind:selectedCategory bind:selectedEmail />
+		{/if}
 
-		{#if selectedMenu === 'emails'}
+		{#if selectedMenu === 'settings'}
+			<SettingsPage
+				{totalEmails}
+				{totalAccounts}
+				{loading}
+				{error}
+				{onExportBackup}
+				{onImportBackup}
+				{onResetSample}
+				{onClearLocalData}
+			/>
+		{:else if selectedMenu === 'emails'}
 			<section class="email-page">
 				<EmailList
 					{emails}
@@ -232,7 +261,7 @@
 		{/if}
 	</main>
 
-	{#if selectedMenu !== 'emails' && account}
+	{#if selectedMenu !== 'emails' && selectedMenu !== 'settings' && account}
 		<DetailPanel
 			{account}
 			{email}

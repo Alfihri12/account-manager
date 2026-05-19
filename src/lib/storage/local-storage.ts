@@ -19,3 +19,9 @@ export function saveJson<T>(key: string, value: T) {
 
 	localStorage.setItem(key, JSON.stringify(value));
 }
+
+export function removeItem(key: string) {
+	if (!browser) return;
+
+	localStorage.removeItem(key);
+}

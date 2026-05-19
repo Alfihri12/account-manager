@@ -1,4 +1,4 @@
-type SelectedMenu = 'dashboard' | 'emails' | 'games' | 'sosmed';
+type SelectedMenu = 'dashboard' | 'emails' | 'games' | 'sosmed' | 'settings';
 
 let selectedMenu = $state<SelectedMenu>('dashboard');
 let search = $state('');

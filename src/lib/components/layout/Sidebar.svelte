@@ -9,6 +9,7 @@
 		gameCount: number;
 		socialCount: number;
 		onExport: () => void;
+		onBackup: () => void;
 	};
 
 	let {
@@ -17,7 +18,8 @@
 		totalEmails,
 		gameCount,
 		socialCount,
-		onExport
+		onExport,
+		onBackup
 	}: Props = $props();
 
 	const menuItems = $derived([
@@ -36,6 +38,14 @@
 	function handleToolSelect(id: string) {
 		if (id === 'export') {
 			onExport();
+		}
+
+		if (id === 'backup') {
+			onBackup();
+		}
+
+		if (id === 'settings') {
+			selectedMenu = 'settings';
 		}
 	}
 </script>

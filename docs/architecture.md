@@ -51,6 +51,21 @@ mock data → repository/localStorage → store pusat → +page.svelte → kompo
 
 Repository menjadi boundary data access. Untuk sekarang repository menyimpan data ke `localStorage`. Saat Tauri + SQLite sudah siap, isi repository bisa diganti ke wrapper `invoke()` tanpa menyebarkan logic backend ke komponen.
 
+Struktur adapter:
+
+```txt
+src/lib/repositories/
+├── account-repository.ts
+├── email-repository.ts
+└── adapters/
+    ├── local-account-adapter.ts
+    ├── local-email-adapter.ts
+    ├── tauri-account-adapter.ts
+    └── tauri-email-adapter.ts
+```
+
+Untuk sekarang repository memakai adapter localStorage. Nanti repository bisa diarahkan ke adapter Tauri tanpa mengubah store dan komponen.
+
 Store yang tersedia:
 
 - `account-store.svelte.ts`: mengambil, membuat, mengubah, menghapus, dan memfilter akun berdasarkan email.
@@ -61,6 +76,7 @@ Store yang tersedia:
 Service yang masih ada:
 
 - `export-markdown.ts`: mengubah data akun menjadi Markdown.
+- `backup-service.ts`: export/import backup JSON.
 
 Komponen child yang perlu mengubah state memakai bindable props Svelte 5, contohnya:
 
