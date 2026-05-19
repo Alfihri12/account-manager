@@ -8,6 +8,8 @@ Dokumen ini menjelaskan pembagian tanggung jawab utama di Account Manager.
 
 Dengan pola ini, perubahan UI tidak membuat `+page.svelte` jadi file raksasa, dan komponen seperti list, card, badge, serta panel detail bisa dirawat sendiri-sendiri.
 
+Sidebar memakai `selectedMenu` untuk mengganti view internal aplikasi. Menu yang tersedia saat ini adalah Dashboard, Email Induk, Akun Game, dan Sosmed.
+
 ## Alur Data
 
 ```txt
@@ -24,6 +26,8 @@ Dengan pola ini, perubahan UI tidak membuat `+page.svelte` jadi file raksasa, da
 └── exportMarkdown()
 ```
 
+`selectedMenu` juga memengaruhi `filteredAccounts`. Saat menu Akun Game aktif, daftar akun dipaksa ke kategori `game`. Saat menu Sosmed aktif, daftar akun dipaksa ke kategori `sosmed`.
+
 State utama diteruskan ke:
 
 ```txt
@@ -35,6 +39,7 @@ app-shell
     ├── Toolbar
     ├── AccountList
     ├── EmailList
+    ├── EmailSummary
     └── DetailPanel
 ```
 

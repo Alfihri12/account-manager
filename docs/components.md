@@ -29,7 +29,10 @@ Pembungkus konten dashboard. Komponen ini menjaga `+page.svelte` tetap tipis den
 - `Toolbar`
 - `AccountList`
 - `EmailList`
+- `EmailSummary`
 - `DetailPanel`
+
+Komponen ini juga menentukan view berdasarkan `selectedMenu`. Dashboard menampilkan statistik, toolbar, daftar akun, daftar email, dan detail akun. Email Induk menampilkan daftar email dan ringkasan email. Akun Game dan Sosmed menampilkan daftar akun yang sudah difilter kategori.
 
 ## Navigation
 
@@ -86,6 +89,10 @@ Panel daftar email induk. Bertugas render kumpulan `EmailCard`.
 ### `email/EmailCard.svelte`
 
 Card email tunggal. Menampilkan label email, jumlah akun, recovery, dan status audit.
+
+### `email/EmailSummary.svelte`
+
+Ringkasan detail semua email induk, termasuk provider, purpose, recovery, 2FA, jumlah akun, dan status audit.
 
 ## UI
 

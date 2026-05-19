@@ -24,10 +24,12 @@
 			const email = emails.find((item) => item.id === account.linkedEmailId);
 			const keyword =
 				`${account.name} ${account.platform} ${account.username} ${email?.label ?? ''}`.toLowerCase();
+			const menuCategory =
+				selectedMenu === 'games' ? 'game' : selectedMenu === 'sosmed' ? 'sosmed' : selectedCategory;
 
 			return (
 				keyword.includes(search.toLowerCase()) &&
-				(selectedCategory === 'all' || account.category === selectedCategory) &&
+				(menuCategory === 'all' || account.category === menuCategory) &&
 				(selectedEmail === 'all' || account.linkedEmailId === Number(selectedEmail))
 			);
 		})
@@ -42,6 +44,20 @@
 	const safeEmails = $derived(emails.filter((email) => email.status === 'safe').length);
 	const gameCount = $derived(accounts.filter((account) => account.category === 'game').length);
 	const socialCount = $derived(accounts.filter((account) => account.category === 'sosmed').length);
+
+	$effect(() => {
+		if (selectedMenu === 'emails' || filteredAccounts.length === 0) {
+			return;
+		}
+
+		const selectedAccountIsVisible = filteredAccounts.some(
+			(account) => account.id === selectedAccountId
+		);
+
+		if (!selectedAccountIsVisible) {
+			selectedAccountId = filteredAccounts[0].id;
+		}
+	});
 
 	function exportMarkdown() {
 		const email = selectedEmailItem?.label ?? '-';
@@ -66,6 +82,7 @@
 	/>
 
 	<DashboardContent
+		{selectedMenu}
 		{emails}
 		accounts={filteredAccounts}
 		{totalEmails}
