@@ -2,7 +2,7 @@ use tauri::AppHandle;
 
 use crate::{
     db,
-    models::{CreateEmailInput, EmailItem},
+    models::{CreateEmailInput, EmailItem, UpdateEmailInput},
 };
 
 #[derive(sqlx::FromRow)]
@@ -87,6 +87,51 @@ pub async fn create_email(app: AppHandle, input: CreateEmailInput) -> Result<Ema
     Ok(email.into())
 }
 
+#[tauri::command]
+pub async fn update_email(
+    app: AppHandle,
+    id: i64,
+    input: UpdateEmailInput,
+) -> Result<EmailItem, String> {
+    validate_update_email(&input)?;
+
+    let pool = db::initialized_pool(&app).await?;
+    ensure_email_exists(&pool, id).await?;
+
+    let now = chrono::Utc::now().to_rfc3339();
+    sqlx::query(
+        r#"
+        UPDATE emails
+        SET
+            label = ?,
+            address = ?,
+            provider = ?,
+            purpose = ?,
+            two_factor = ?,
+            recovery = ?,
+            status = ?,
+            updated_at = ?
+        WHERE id = ?
+        "#,
+    )
+    .bind(input.label.trim())
+    .bind(input.address.trim())
+    .bind(input.provider.trim())
+    .bind(input.purpose.trim())
+    .bind(input.two_factor)
+    .bind(input.recovery.trim())
+    .bind(input.status.trim())
+    .bind(&now)
+    .bind(id)
+    .execute(&pool)
+    .await
+    .map_err(|error| error.to_string())?;
+
+    let email = select_email_by_id(&pool, id).await?;
+
+    Ok(email.into())
+}
+
 async fn select_emails(pool: &sqlx::SqlitePool) -> Result<Vec<EmailRow>, String> {
     sqlx::query_as::<_, EmailRow>(
         r#"
@@ -160,6 +205,21 @@ async fn select_email_by_id(pool: &sqlx::SqlitePool, email_id: i64) -> Result<Em
     .map_err(|error| error.to_string())
 }
 
+async fn ensure_email_exists(pool: &sqlx::SqlitePool, email_id: i64) -> Result<(), String> {
+    let exists = sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM emails WHERE id = ?")
+        .bind(email_id)
+        .fetch_one(pool)
+        .await
+        .map_err(|error| error.to_string())?
+        > 0;
+
+    if !exists {
+        return Err("Email tidak ditemukan".to_string());
+    }
+
+    Ok(())
+}
+
 fn validate_create_email(input: &CreateEmailInput) -> Result<(), String> {
     if input.label.trim().is_empty() {
         return Err("label email tidak boleh kosong".to_string());
@@ -171,6 +231,26 @@ fn validate_create_email(input: &CreateEmailInput) -> Result<(), String> {
 
     if input.provider.trim().is_empty() {
         return Err("provider email tidak boleh kosong".to_string());
+    }
+
+    Ok(())
+}
+
+fn validate_update_email(input: &UpdateEmailInput) -> Result<(), String> {
+    if input.label.trim().is_empty() {
+        return Err("label email tidak boleh kosong".to_string());
+    }
+
+    if input.address.trim().is_empty() {
+        return Err("address email tidak boleh kosong".to_string());
+    }
+
+    if input.provider.trim().is_empty() {
+        return Err("provider email tidak boleh kosong".to_string());
+    }
+
+    if !matches!(input.status.trim(), "safe" | "audit") {
+        return Err("status email harus safe atau audit".to_string());
     }
 
     Ok(())

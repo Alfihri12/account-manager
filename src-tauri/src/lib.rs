@@ -24,8 +24,10 @@ pub fn run() {
             ping,
             commands::account::create_account,
             commands::account::get_accounts,
+            commands::account::update_account,
             commands::email::create_email,
             commands::email::get_emails,
+            commands::email::update_email,
             commands::health::init_database
         ])
         .run(tauri::generate_context!())

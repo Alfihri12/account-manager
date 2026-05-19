@@ -2,7 +2,7 @@ use tauri::AppHandle;
 
 use crate::{
     db,
-    models::{AccountItem, CreateAccountInput},
+    models::{AccountItem, CreateAccountInput, UpdateAccountInput},
 };
 
 #[derive(sqlx::FromRow)]
@@ -126,6 +126,63 @@ pub async fn create_account(
     account.try_into()
 }
 
+#[tauri::command]
+pub async fn update_account(
+    app: AppHandle,
+    id: i64,
+    input: UpdateAccountInput,
+) -> Result<AccountItem, String> {
+    validate_update_account(&input)?;
+
+    let pool = db::initialized_pool(&app).await?;
+    ensure_account_exists(&pool, id).await?;
+    ensure_linked_email_exists(&pool, input.linked_email_id).await?;
+
+    let tags = serde_json::to_string(&input.tags).map_err(|error| error.to_string())?;
+    let now = chrono::Utc::now().to_rfc3339();
+    sqlx::query(
+        r#"
+        UPDATE accounts
+        SET
+            name = ?,
+            category = ?,
+            platform = ?,
+            username = ?,
+            user_id = ?,
+            login_method = ?,
+            linked_email_id = ?,
+            password_location = ?,
+            two_factor = ?,
+            status = ?,
+            tags = ?,
+            notes = ?,
+            updated_at = ?
+        WHERE id = ?
+        "#,
+    )
+    .bind(input.name.trim())
+    .bind(input.category.trim())
+    .bind(input.platform.trim())
+    .bind(input.username.trim())
+    .bind(input.user_id.as_deref().map(str::trim))
+    .bind(input.login_method.trim())
+    .bind(input.linked_email_id)
+    .bind(input.password_location.trim())
+    .bind(input.two_factor)
+    .bind(input.status.trim())
+    .bind(tags)
+    .bind(input.notes.trim())
+    .bind(&now)
+    .bind(id)
+    .execute(&pool)
+    .await
+    .map_err(|error| error.to_string())?;
+
+    let account = select_account_by_id(&pool, id).await?;
+
+    account.try_into()
+}
+
 async fn select_accounts(pool: &sqlx::SqlitePool) -> Result<Vec<AccountRow>, String> {
     sqlx::query_as::<_, AccountRow>(
         r#"
@@ -186,6 +243,36 @@ async fn select_account_by_id(
     .map_err(|error| error.to_string())
 }
 
+async fn ensure_account_exists(pool: &sqlx::SqlitePool, account_id: i64) -> Result<(), String> {
+    let exists = sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM accounts WHERE id = ?")
+        .bind(account_id)
+        .fetch_one(pool)
+        .await
+        .map_err(|error| error.to_string())?
+        > 0;
+
+    if !exists {
+        return Err("Akun tidak ditemukan".to_string());
+    }
+
+    Ok(())
+}
+
+async fn ensure_linked_email_exists(pool: &sqlx::SqlitePool, email_id: i64) -> Result<(), String> {
+    let exists = sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM emails WHERE id = ?")
+        .bind(email_id)
+        .fetch_one(pool)
+        .await
+        .map_err(|error| error.to_string())?
+        > 0;
+
+    if !exists {
+        return Err("linked_email_id tidak ditemukan di emails".to_string());
+    }
+
+    Ok(())
+}
+
 fn validate_create_account(input: &CreateAccountInput) -> Result<(), String> {
     if input.name.trim().is_empty() {
         return Err("name akun tidak boleh kosong".to_string());
@@ -201,6 +288,33 @@ fn validate_create_account(input: &CreateAccountInput) -> Result<(), String> {
 
     if input.username.trim().is_empty() {
         return Err("username akun tidak boleh kosong".to_string());
+    }
+
+    Ok(())
+}
+
+fn validate_update_account(input: &UpdateAccountInput) -> Result<(), String> {
+    if input.name.trim().is_empty() {
+        return Err("name akun tidak boleh kosong".to_string());
+    }
+
+    if input.category.trim().is_empty() {
+        return Err("category akun tidak boleh kosong".to_string());
+    }
+
+    if input.platform.trim().is_empty() {
+        return Err("platform akun tidak boleh kosong".to_string());
+    }
+
+    if input.username.trim().is_empty() {
+        return Err("username akun tidak boleh kosong".to_string());
+    }
+
+    if !matches!(
+        input.status.trim(),
+        "active" | "need_check" | "inactive" | "lost"
+    ) {
+        return Err("status akun harus active, need_check, inactive, atau lost".to_string());
     }
 
     Ok(())

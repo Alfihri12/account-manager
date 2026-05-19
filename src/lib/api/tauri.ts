@@ -3,7 +3,9 @@ import type {
 	AccountItem,
 	CreateAccountInput,
 	CreateEmailInput,
-	EmailItem
+	EmailItem,
+	UpdateAccountInput,
+	UpdateEmailInput
 } from '$lib/types/account';
 
 export type DatabaseHealth = {
@@ -33,4 +35,12 @@ export async function createEmailInTauri(input: CreateEmailInput) {
 
 export async function createAccountInTauri(input: CreateAccountInput) {
 	return invoke<AccountItem>('create_account', { input });
+}
+
+export async function updateEmailInTauri(id: number, input: UpdateEmailInput) {
+	return invoke<EmailItem>('update_email', { id, input });
+}
+
+export async function updateAccountInTauri(id: number, input: UpdateAccountInput) {
+	return invoke<AccountItem>('update_account', { id, input });
 }

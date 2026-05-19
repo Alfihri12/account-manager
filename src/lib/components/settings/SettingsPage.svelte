@@ -14,6 +14,8 @@
 		onTestSqliteGetAccounts: () => void | Promise<void>;
 		onTestSqliteCreateEmail: () => void | Promise<void>;
 		onTestSqliteCreateAccount: () => void | Promise<void>;
+		onTestSqliteUpdateEmail: () => void | Promise<void>;
+		onTestSqliteUpdateAccount: () => void | Promise<void>;
 	};
 
 	let {
@@ -30,7 +32,9 @@
 		onTestSqliteGetEmails,
 		onTestSqliteGetAccounts,
 		onTestSqliteCreateEmail,
-		onTestSqliteCreateAccount
+		onTestSqliteCreateAccount,
+		onTestSqliteUpdateEmail,
+		onTestSqliteUpdateAccount
 	}: Props = $props();
 
 	let fileInput = $state<HTMLInputElement>();
@@ -127,11 +131,17 @@
 			<button class="secondary" disabled={loading} onclick={onTestSqliteGetEmails}
 				>Test SQLite get emails</button
 			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteUpdateEmail}
+				>Test SQLite update email</button
+			>
 			<button class="secondary" disabled={loading} onclick={onTestSqliteCreateAccount}
 				>Test SQLite create account</button
 			>
 			<button class="secondary" disabled={loading} onclick={onTestSqliteGetAccounts}
 				>Test SQLite get accounts</button
+			>
+			<button class="secondary" disabled={loading} onclick={onTestSqliteUpdateAccount}
+				>Test SQLite update account</button
 			>
 		</div>
 	</section>

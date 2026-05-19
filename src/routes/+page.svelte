@@ -8,7 +8,9 @@
 		getAccountsFromTauri,
 		getEmailsFromTauri,
 		initDatabase,
-		pingRust
+		pingRust,
+		updateAccountInTauri,
+		updateEmailInTauri
 	} from '$lib/api/tauri';
 	import {
 		downloadBackupJson,
@@ -316,6 +318,79 @@
 		}
 	}
 
+	async function handleTestSqliteUpdateEmail() {
+		try {
+			const emails = await getEmailsFromTauri();
+			const email = emails[0];
+
+			if (!email) {
+				toastStore.error('Buat email SQLite dulu sebelum update email.');
+				return;
+			}
+
+			const suffix = Date.now();
+			const result = await updateEmailInTauri(email.id, {
+				label: `Updated Email ${suffix}`,
+				address: email.address,
+				provider: 'Updated Provider',
+				purpose: 'SQLite update command test',
+				twoFactor: !email.twoFactor,
+				recovery: `Updated recovery ${suffix}`,
+				status: email.status === 'safe' ? 'audit' : 'safe'
+			});
+
+			console.log(result);
+			toastStore.success(JSON.stringify(result));
+		} catch (error) {
+			toastStore.error(
+				getErrorMessage(error, 'Gagal update email SQLite. Jalankan lewat Tauri dev.')
+			);
+		}
+	}
+
+	async function handleTestSqliteUpdateAccount() {
+		try {
+			const accounts = await getAccountsFromTauri();
+			const account = accounts[0];
+
+			if (!account) {
+				toastStore.error('Buat account SQLite dulu sebelum update account.');
+				return;
+			}
+
+			const emails = await getEmailsFromTauri();
+			const email = emails[0];
+
+			if (!email) {
+				toastStore.error('Buat email SQLite dulu sebelum update account.');
+				return;
+			}
+
+			const suffix = Date.now();
+			const result = await updateAccountInTauri(account.id, {
+				name: `Updated Account ${suffix}`,
+				category: account.category,
+				platform: 'Updated Platform',
+				username: `updated-user-${suffix}`,
+				userId: account.userId ?? `updated-${suffix}`,
+				loginMethod: account.loginMethod,
+				linkedEmailId: email.id,
+				passwordLocation: 'Updated password manager',
+				twoFactor: !account.twoFactor,
+				status: account.status === 'active' ? 'need_check' : 'active',
+				tags: [...account.tags, 'updated'],
+				notes: `Updated from Settings SQLite debug button at ${suffix}.`
+			});
+
+			console.log(result);
+			toastStore.success(JSON.stringify(result));
+		} catch (error) {
+			toastStore.error(
+				getErrorMessage(error, 'Gagal update account SQLite. Jalankan lewat Tauri dev.')
+			);
+		}
+	}
+
 	function getErrorMessage(error: unknown, fallback: string) {
 		return error instanceof Error ? error.message : fallback;
 	}
@@ -370,6 +445,8 @@
 		onTestSqliteGetAccounts={handleTestSqliteGetAccounts}
 		onTestSqliteCreateEmail={handleTestSqliteCreateEmail}
 		onTestSqliteCreateAccount={handleTestSqliteCreateAccount}
+		onTestSqliteUpdateEmail={handleTestSqliteUpdateEmail}
+		onTestSqliteUpdateAccount={handleTestSqliteUpdateAccount}
 	/>
 
 	<Toast />
